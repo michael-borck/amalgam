@@ -5,7 +5,7 @@ Accepted (supersedes ADR-002)
 
 ## Context
 
-The extruder choice is critical to Amalgam's philosophy of building a "Tractor with the Brain of a Racecar." After extensive evaluation documented in:
+The extruder choice is critical to the Amalgam (Neo-Darwin) philosophy of building a "Tractor with the Brain of a Racecar." After extensive evaluation documented in:
 
 - `docs/decisions/tractor_06_extruder_decision.md` (comprehensive analysis)
 - `docs/reference/ai-conversations/pitian-v-orbiter.md`
@@ -25,6 +25,7 @@ This is one reason Bambu Lab printers—known for print quality—use single-dri
 |----------|------------|-------|------------|--------|--------|
 | Greg's Wade | Single | NEMA17 | $2-5 | 360-600g | Heritage Option |
 | MK8/MK9 | Single | NEMA17 | $0-6 | 150-200g | Ultra-Scavenger |
+| Not So Itty Bitty | Single (belted) | NEMA17 | $15-20 | 280-320g | Belt-Drive Alternative |
 | Sherpa Mini | Dual | NEMA14 | $22-34 | 110-127g | Not selected (dual-drive) |
 | Orbiter v1.5 | Dual | LDO specific | $60-100 | 140-150g | Not selected (cost, dual-drive) |
 | LGX Lite | Dual | NEMA14 | $120-150 | 150-165g | Not selected (cost, dual-drive) |
@@ -94,16 +95,16 @@ The Wade is preserved as a **Heritage Option** for builders who value pure RepRa
 | Component | Source | Cost (AUD) |
 |-----------|--------|------------|
 | Pitan printed parts (body + gears) | Print yourself | $0.50-1 |
-| Hobbed bolt or MK8 drive gear | AliExpress/hardware | $2-5 |
+| MK8 drive gear (11mm) | AliExpress/scavenge | $0-5 |
 | NEMA17 motor | Scavenge from donor | $0 |
-| 608 bearings (x2) | Hardware store/scavenge | $0-2 |
-| M3 hardware + springs | Hardware store | $1-2 |
+| 695zz bearings (×2) + 623zz bearing (×1) | AliExpress/bearing supplier | $2-4 |
+| M3/M4/M5 hardware + springs | Hardware store | $1-2 |
 | PTFE tube + fitting | Hardware store | $1 |
-| **Total** | | **$4.50-11** |
+| **Total** | | **$4.50-13** |
 
 ### Scavenger Build (Tier 1-2)
 
-Same as above—the Pitan is scavenger-native by design.
+Same as above—the Pitan is scavenger-native by design. The MK8 drive gear and NEMA17 motor are directly salvageable from any budget donor printer (Ender 3, Anet A8, etc.). The 695zz and 623zz bearings are the only items that typically need ordering — they're cheap (pack of 10 for a few dollars on AliExpress) but not commonly found in donor printers.
 
 ## Klipper Configuration
 
@@ -149,6 +150,19 @@ For extreme budget constraints or if you already have one:
 - Lightweight (~150-200g)—excellent for M8 rods
 - Klipper pressure advance compensates for 1:1 ratio
 
+### Belt-Drive Alternative: Not So Itty Bitty Belted Extruder
+
+A NEMA 17 remix of Clough42's Itty Bitty Belted Extruder ([Thingiverse #389105](https://www.thingiverse.com/thing:389105), remix [#1445337](https://www.thingiverse.com/thing:1445337)). Uses a GT2 belt instead of printed gears, which eliminates gear noise and provides smoother filament feeding — the belt acts as a compliance element absorbing stepper motor vibration. Single-drive with hobbed bolt + idler, retaining the Greg's Accessible Extruder geometry.
+
+- **Pro:** Belt drive is quieter and smoother than printed gears — may reduce very fine extrusion artifacts (VFAs)
+- **Pro:** Single-drive architecture aligns with Amalgam philosophy
+- **Pro:** Large pulley is printed; 608 bearings are easily scavenged
+- **Con:** Requires purchasing a GT2 metal pulley, 188–200mm GT2 closed-loop belt, and 8mm hobbed bolt — less scavengeable than the Pitan
+- **Con:** Estimated ~$15–20 AUD in non-salvageable parts
+- **Con:** Originally designed for NEMA 14; the NEMA 17 remix is community-maintained
+
+Worth considering for builders prioritising surface finish quality over pure scavengeability, or who already have GT2 belts and pulleys in their parts bin.
+
 ### Use What You Have
 
 **This is the most important option.** If you have an extruder in your parts bin—Titan, Hemera, BMG, Sherpa—**use it**. The Amalgam carriage design is adaptable.
@@ -162,6 +176,7 @@ The Pitan is the *reference specification*, not a mandate. The single-drive reco
 - `docs/reference/ai-conversations/pitian-v-orbiter.md`: Pitan vs Orbiter analysis
 - `docs/reference/ai-conversations/single-v-dual-drive.md`: Drive architecture discussion
 - Pitan designs: Community versions on Printables/Thingiverse (Printable Titan clone)
+- Not So Itty Bitty Belted Extruder: NEMA17 remix of Clough42's Itty Bitty ([Thingiverse #1445337](https://www.thingiverse.com/thing:1445337), original [#389105](https://www.thingiverse.com/thing:389105))
 - E3D Titan: Original design the Pitan is based on
 
 ---

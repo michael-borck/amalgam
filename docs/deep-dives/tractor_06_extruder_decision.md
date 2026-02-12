@@ -1,4 +1,4 @@
-# Amalgam: Extruder Selection & Decision Record
+# Amalgam (Neo-Darwin): Extruder Selection & Decision Record
 
 ✅ **Still Relevant:** This deep exploration of extruder options and rationale for Pitan selection remains current. **For canonical decision, see:**
 - **ADR-019**: Pitan Extruder (formal decision, supersedes ADR-002: Greg's Wade)
@@ -28,12 +28,14 @@ Amalgam uses single-drive extruders exclusively. Dual-drive designs (BMG, Sherpa
 | 7 | **Pitan** | ✅ Single | NEMA17 | ~$4-10 | 260-300g | ✅ **Reference Spec** |
 | 8 | Voron (various) | ❌ Dual | Various | ~$60-120 | 100-150g | ❌ Cost, complexity |
 | 9 | BMG Clone | ❌ Dual | NEMA17 | ~$15-25 | 250-350g | ❌ Dual-drive |
+| 10 | **Not So Itty Bitty** | ✅ Single (belted) | NEMA17 | ~$15-20 | 280-320g | ⚠️ Belt-Drive Alt |
 
 ### Recommendation Summary
 
 | Tier | Extruder | Cost | Notes |
 |------|----------|------|-------|
 | ✅ **Reference Spec** | Pitan + NEMA17 | ~$4-10 | Best balance for Tractor philosophy |
+| ⚠️ Belt-Drive Alt | Not So Itty Bitty + NEMA17 | ~$15-20 | Smoother belt drive, less scavengeable |
 | ⚠️ Heritage Option | Wade + Pancake NEMA17 | ~$2-5 | RepRap nostalgia, PLA/PETG only |
 | ⚠️ Ultra-Scavenger | MK8 Direct | ~$0-6 | If you have one, PLA/PETG only |
 
@@ -72,6 +74,7 @@ Early in our evaluation, we made a key architectural decision: **Amalgam will us
 | Type | Mechanism | Examples |
 |------|-----------|----------|
 | **Single-drive** | One drive gear + one idler bearing | Pitan, Wade, MK8, E3D Titan |
+| **Single-drive (belted)** | Belt-driven hobbed bolt + idler bearing | Not So Itty Bitty, Itty Bitty |
 | **Dual-drive** | Two meshing drive gears, both grip filament | BMG, Sherpa Mini, Orbiter, LGX Lite |
 
 **Why single-drive for Amalgam?**
@@ -401,10 +404,10 @@ The Pitan (Printable Titan) is a 3D-printed clone of the E3D Titan, designed for
 |-----------|------------|
 | Pitan printed parts (body + gears) | $0.50-1 (filament) |
 | NEMA17 motor | $0 (scavenged) |
-| 608 bearings | $0-2 |
-| Hobbed bolt or MK8 drive gear | $2-5 |
-| Hardware (springs, fasteners) | $1-2 |
-| **Total** | **$3.50-10** |
+| 695zz bearings (×2) + 623zz bearing (×1) | $2-4 (order from AliExpress — not typically salvageable) |
+| MK8 drive gear (11mm) | $0-5 (scavenge from donor or purchase) |
+| M3/M4/M5 hardware + springs | $1-2 |
+| **Total** | **$3.50-12** |
 
 **Engineering Analysis:**
 
@@ -473,6 +476,39 @@ Pre-assembled BMG extruders with full NEMA17 motors, sold as complete units.
 
 ---
 
+### 10. Not So Itty Bitty Belted Extruder (Belt-Drive Single)
+
+A NEMA 17 remix of Clough42's Itty Bitty Belted Extruder. Uses a GT2 belt instead of printed or metal gears. Based on Greg's Accessible Extruder geometry with 608 bearings and 8mm hobbed bolt.
+
+**Specifications:**
+| Attribute | Value |
+|-----------|-------|
+| Gear Ratio | Belt reduction (varies by pulley sizes) |
+| Motor | NEMA17 standard |
+| Weight | ~280-320g (with NEMA17) |
+| Drive | ✅ Single hobbed bolt + idler (belt driven) |
+
+**Pros:**
+- ✅ **Single-drive design** — no gear mesh artifacts
+- GT2 belt is quieter than printed gears — eliminates clicking/whine
+- Belt compliance absorbs stepper vibration — potentially smoother extrusion
+- Large pulley is printed; 608 bearings widely scavenged
+- Uses NEMA17 motor (scavengeable)
+- Belt has longer wear life than printed gears
+
+**Cons:**
+- Requires purchasing GT2 metal pulley, 188–200mm GT2 belt loop, and 8mm hobbed bolt
+- Less scavengeable than Pitan ($10-20 vs $4-10)
+- Originally designed for NEMA 14; NEMA 17 variant is community remix
+- 608 bearings are larger/heavier than Pitan's 695zz
+- Hobbed bolt not salvageable from typical budget donor printers (they use MK8 gears)
+
+**Verdict:** The best single-drive option for surface finish quality — the belt drive genuinely provides smoother filament feeding than printed gears. However, less scavengeable than the Pitan due to the hobbed bolt, belt, and pulley requirements. Documented as a belt-drive alternative for builders who prioritise print quality over parts-bin convenience.
+
+**Status: ⚠️ Belt-Drive Alternative**
+
+---
+
 ## The Decision: Pitan as Reference Spec
 
 ### Why Pitan?
@@ -525,12 +561,14 @@ The Wade is documented as a heritage option for builders who value RepRap roots 
 | Component | Source | Cost (AUD) |
 |-----------|--------|------------|
 | Pitan printed parts (body + gears) | Print yourself | $0.50-1 |
-| Hobbed bolt or MK8 drive gear | AliExpress/hardware | $2-5 |
+| MK8 drive gear (11mm) | AliExpress/scavenge from donor | $0-5 |
 | NEMA17 motor | Scavenge from donor | $0 |
-| 608 bearings (×2) | Hardware store/scavenge | $0-2 |
-| M3 hardware + springs | Hardware store | $1-2 |
+| 695zz bearings (×2) + 623zz bearing (×1) | AliExpress/bearing supplier | $2-4 |
+| M3/M4/M5 hardware + springs | Hardware store | $1-2 |
 | PTFE tube + fitting | Hardware store | $1 |
-| **Total** | | **$4.50-11** |
+| **Total** | | **$4.50-13** |
+
+> **Scavengeability note:** The MK8 drive gear and NEMA17 motor are directly salvageable from virtually any budget donor printer (Ender 3, Anet A8, CR-10, etc.). The 695zz and 623zz bearings are the only items that typically need ordering — they're cheap (pack of 10 for a few dollars on AliExpress) but not commonly found in donor printers.
 
 ### Rod Requirements
 
@@ -630,6 +668,48 @@ For extreme budget constraints or if you already have one:
 - Only printing PLA/PETG at moderate speeds
 - You value simplicity over performance headroom
 
+### Belt-Drive Alternative: Not So Itty Bitty Belted Extruder
+
+A NEMA 17 remix ([Thingiverse #1445337](https://www.thingiverse.com/thing:1445337)) of Clough42's Itty Bitty Belted Extruder ([Thingiverse #389105](https://www.thingiverse.com/thing:389105)). Uses a GT2 belt instead of printed gears, derived from the Greg's Accessible Extruder geometry.
+
+| Component | Cost (AUD) |
+|-----------|------------|
+| Printed body + large pulley | $0.50-1 (filament) |
+| NEMA17 motor | $0 (scavenged) |
+| 608 bearings (×2) | $0-2 (scavenged — common in donor printers) |
+| GT2 metal pulley (small, motor shaft) | $3-5 (purchase) |
+| 188–200mm GT2 closed-loop belt | $3-5 (purchase) |
+| 8mm hobbed bolt + spacers | $3-5 (purchase) |
+| M3/M4 hardware | $1-2 |
+| **Total** | **$10-20** |
+
+**Key considerations:**
+- ✅ Single-drive design (hobbed bolt + idler) — aligns with Amalgam quality philosophy
+- GT2 belt drive is quieter than printed gears and eliminates gear noise entirely
+- Belt acts as a compliance element absorbing stepper motor micro-vibration — may reduce very fine extrusion artifacts (VFAs)
+- Large pulley is printed; 608 bearings are easily scavenged
+- Uses standard 8mm hobbed bolt geometry (Greg's Wade heritage)
+- Originally designed for NEMA 14; the NEMA 17 remix is community-maintained
+- Less scavengeable than Pitan — GT2 pulley, belt loop, and hobbed bolt all require purchasing
+
+**When to choose Not So Itty Bitty:**
+- You prioritise surface finish quality and want the smoothest possible filament feeding
+- You already have GT2 belts and pulleys in your parts bin
+- You want single-drive architecture but prefer belt compliance over printed gear mesh
+- You don't mind ordering a few specialised parts
+
+**Engineering comparison with Pitan:**
+
+| Factor | Pitan | Not So Itty Bitty |
+|--------|-------|-------------------|
+| Drive method | Printed spur gears (3:1) | GT2 belt + printed pulley |
+| Drive noise | Some gear mesh noise | Very quiet (belt) |
+| Vibration absorption | None (rigid gear mesh) | Belt provides compliance |
+| Scavengeability | Excellent (MK8 gear from donor) | Moderate (belt/pulley/hobbed bolt to purchase) |
+| Cost | $4-10 | $10-20 |
+| Gear/belt durability | Printed gears may crack at high speeds | Belt has longer wear life |
+| Weight (excl. motor) | ~100-120g | ~100-140g (608 bearings heavier than 695zz) |
+
 ### Use What You Have
 
 **This is the most important option.**
@@ -648,12 +728,13 @@ The single-drive recommendation is about optimal quality for new builds, not a c
 
 | Part | Qty | Cost | Notes |
 |------|-----|------|-------|
-| Hobbed bolt or MK8 gear | 1 | $2-3 | Drive gear replacement |
-| 608 bearings | 4 | $2 | Common wear item |
+| MK8 drive gear (11mm) | 1 | $2-3 | Drive gear replacement |
+| 695zz bearings | 4 | $2 | Hobbed bolt support |
+| 623zz bearings | 2 | $1 | Idler bearing |
 | Pitan body (printed) | 1 set | $0.50 | Print during initial build |
 | Printed gears | 1 set | $0.25 | Print spares with body |
 | PTFE tube | 1m | $1 | Cut to length as needed |
-| M3 hardware assortment | Various | $2 | For any repairs |
+| M3/M5 hardware assortment | Various | $2 | For any repairs |
 
 With these spares, you're covered for 5+ years of operation.
 
@@ -685,6 +766,10 @@ With these spares, you're covered for 5+ years of operation.
 
 > "Absolutely! The Pitan is our reference spec, but you're a maker — use what you have. If there's a Sherpa, Orbiter, or BMG in your parts bin, use it. The dual-drive concerns are about optimal quality for new builds, not a condemnation of existing equipment. The documentation is a starting point, not a constraint."
 
+### "What about a belt-driven extruder for even smoother extrusion?"
+
+> "Great question! The Not So Itty Bitty Belted Extruder is documented as a belt-drive alternative — it's single-drive (aligning with our philosophy) and the GT2 belt genuinely provides smoother, quieter filament feeding than the Pitan's printed gears. The trade-off is scavengeability: the belt, GT2 pulley, and hobbed bolt all need purchasing (~$10-20 AUD), whereas the Pitan can be built almost entirely from donor printer parts. If surface finish is your top priority and you don't mind ordering a few parts, it's worth a look."
+
 ---
 
 ## Conclusion
@@ -714,6 +799,7 @@ The Pitan extruder embodies the Amalgam philosophy:
 
 ### Extruders Evaluated
 - Pitan Extruder: Community designs on Printables/Thingiverse (Printable Titan clone)
+- Not So Itty Bitty Belted Extruder: NEMA17 remix ([Thingiverse #1445337](https://www.thingiverse.com/thing:1445337)) of Clough42's Itty Bitty ([#389105](https://www.thingiverse.com/thing:389105), also on [Printables](https://www.printables.com/model/202249-itty-bitty-belted-extruder))
 - Greg's Wade: Original RepRap design, various community versions
 - MK8/MK9: Standard on Creality, Anet, and most budget printers
 - Sherpa Mini/Micro: `github.com/Annex-Engineering/Sherpa_Mini-Extruder`
@@ -732,5 +818,5 @@ The Pitan extruder embodies the Amalgam philosophy:
 
 ---
 
-*Document prepared for the Amalgam Project*
+*Document prepared for the Amalgam (Neo-Darwin) Project*
 *"A Tractor with the Brain of a Racecar"*
