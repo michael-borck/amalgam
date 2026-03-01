@@ -1,5 +1,9 @@
 # Amalgam
 
+<!-- BADGES:START -->
+[![3d-printing](https://img.shields.io/badge/-3d--printing-blue?style=flat-square)](https://github.com/topics/3d-printing) [![cad](https://img.shields.io/badge/-cad-blue?style=flat-square)](https://github.com/topics/cad) [![configuration](https://img.shields.io/badge/-configuration-blue?style=flat-square)](https://github.com/topics/configuration) [![diy](https://img.shields.io/badge/-diy-blue?style=flat-square)](https://github.com/topics/diy) [![klipper](https://img.shields.io/badge/-klipper-blue?style=flat-square)](https://github.com/topics/klipper) [![maker](https://img.shields.io/badge/-maker-blue?style=flat-square)](https://github.com/topics/maker) [![parametric-design](https://img.shields.io/badge/-parametric--design-blue?style=flat-square)](https://github.com/topics/parametric-design) [![python](https://img.shields.io/badge/-python-3776ab?style=flat-square)](https://github.com/topics/python) [![reprap](https://img.shields.io/badge/-reprap-blue?style=flat-square)](https://github.com/topics/reprap) [![salvage](https://img.shields.io/badge/-salvage-blue?style=flat-square)](https://github.com/topics/salvage)
+<!-- BADGES:END -->
+
 ### A 2026 RepRap Reference Specification
 
 **High-Mass, Low-Cost, Total Control.**
