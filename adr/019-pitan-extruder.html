@@ -2,17 +2,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.26">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
 <title>pitan-extruder – Amalgam</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -67,15 +73,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-50eb5b89b0de81519140945548e2bba6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -291,7 +296,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/the80-20workshop/amalgam"> <i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/michael-borck/amalgam"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -341,6 +346,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#heritage-option-gregs-wade-pancake-nema17" id="toc-heritage-option-gregs-wade-pancake-nema17" class="nav-link" data-scroll-target="#heritage-option-gregs-wade-pancake-nema17">Heritage Option: Greg’s Wade + Pancake NEMA17</a></li>
   <li><a href="#ultra-scavenger-option-mk8-direct-drive" id="toc-ultra-scavenger-option-mk8-direct-drive" class="nav-link" data-scroll-target="#ultra-scavenger-option-mk8-direct-drive">Ultra-Scavenger Option: MK8 Direct Drive</a></li>
+  <li><a href="#belt-drive-alternative-not-so-itty-bitty-belted-extruder" id="toc-belt-drive-alternative-not-so-itty-bitty-belted-extruder" class="nav-link" data-scroll-target="#belt-drive-alternative-not-so-itty-bitty-belted-extruder">Belt-Drive Alternative: Not So Itty Bitty Belted Extruder</a></li>
   <li><a href="#use-what-you-have" id="toc-use-what-you-have" class="nav-link" data-scroll-target="#use-what-you-have">Use What You Have</a></li>
   </ul></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
@@ -362,7 +368,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="context" class="level2">
 <h2 class="anchored" data-anchor-id="context">Context</h2>
-<p>The extruder choice is critical to Amalgam’s philosophy of building a “Tractor with the Brain of a Racecar.” After extensive evaluation documented in:</p>
+<p>The extruder choice is critical to the Amalgam (Neo-Darwin) philosophy of building a “Tractor with the Brain of a Racecar.” After extensive evaluation documented in:</p>
 <ul>
 <li><code>docs/decisions/tractor_06_extruder_decision.md</code> (comprehensive analysis)</li>
 <li><code>docs/reference/ai-conversations/pitian-v-orbiter.md</code></li>
@@ -413,6 +419,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Ultra-Scavenger</td>
 </tr>
 <tr class="odd">
+<td>Not So Itty Bitty</td>
+<td>Single (belted)</td>
+<td>NEMA17</td>
+<td>$15-20</td>
+<td>280-320g</td>
+<td>Belt-Drive Alternative</td>
+</tr>
+<tr class="even">
 <td>Sherpa Mini</td>
 <td>Dual</td>
 <td>NEMA14</td>
@@ -420,7 +434,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>110-127g</td>
 <td>Not selected (dual-drive)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Orbiter v1.5</td>
 <td>Dual</td>
 <td>LDO specific</td>
@@ -428,7 +442,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>140-150g</td>
 <td>Not selected (cost, dual-drive)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>LGX Lite</td>
 <td>Dual</td>
 <td>NEMA14</td>
@@ -436,7 +450,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>150-165g</td>
 <td>Not selected (cost, dual-drive)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><strong>Pitan</strong></td>
 <td><strong>Single</strong></td>
 <td><strong>NEMA17</strong></td>
@@ -554,6 +568,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="reference-build-tier-3" class="level3">
 <h3 class="anchored" data-anchor-id="reference-build-tier-3">Reference Build (Tier 3)</h3>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 35%">
+<col style="width: 25%">
+<col style="width: 38%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Component</th>
@@ -568,9 +587,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>$0.50-1</td>
 </tr>
 <tr class="even">
-<td>Hobbed bolt or MK8 drive gear</td>
-<td>AliExpress/hardware</td>
-<td>$2-5</td>
+<td>MK8 drive gear (11mm)</td>
+<td>AliExpress/scavenge</td>
+<td>$0-5</td>
 </tr>
 <tr class="odd">
 <td>NEMA17 motor</td>
@@ -578,12 +597,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>$0</td>
 </tr>
 <tr class="even">
-<td>608 bearings (x2)</td>
-<td>Hardware store/scavenge</td>
-<td>$0-2</td>
+<td>695zz bearings (×2) + 623zz bearing (×1)</td>
+<td>AliExpress/bearing supplier</td>
+<td>$2-4</td>
 </tr>
 <tr class="odd">
-<td>M3 hardware + springs</td>
+<td>M3/M4/M5 hardware + springs</td>
 <td>Hardware store</td>
 <td>$1-2</td>
 </tr>
@@ -595,14 +614,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td><strong>Total</strong></td>
 <td></td>
-<td><strong>$4.50-11</strong></td>
+<td><strong>$4.50-13</strong></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="scavenger-build-tier-1-2" class="level3">
 <h3 class="anchored" data-anchor-id="scavenger-build-tier-1-2">Scavenger Build (Tier 1-2)</h3>
-<p>Same as above—the Pitan is scavenger-native by design.</p>
+<p>Same as above—the Pitan is scavenger-native by design. The MK8 drive gear and NEMA17 motor are directly salvageable from any budget donor printer (Ender 3, Anet A8, etc.). The 695zz and 623zz bearings are the only items that typically need ordering — they’re cheap (pack of 10 for a few dollars on AliExpress) but not commonly found in donor printers.</p>
 </section>
 </section>
 <section id="klipper-configuration" class="level2">
@@ -649,6 +668,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Klipper pressure advance compensates for 1:1 ratio</li>
 </ul>
 </section>
+<section id="belt-drive-alternative-not-so-itty-bitty-belted-extruder" class="level3">
+<h3 class="anchored" data-anchor-id="belt-drive-alternative-not-so-itty-bitty-belted-extruder">Belt-Drive Alternative: Not So Itty Bitty Belted Extruder</h3>
+<p>A NEMA 17 remix of Clough42’s Itty Bitty Belted Extruder (<a href="https://www.thingiverse.com/thing:389105">Thingiverse #389105</a>, remix <a href="https://www.thingiverse.com/thing:1445337">#1445337</a>). Uses a GT2 belt instead of printed gears, which eliminates gear noise and provides smoother filament feeding — the belt acts as a compliance element absorbing stepper motor vibration. Single-drive with hobbed bolt + idler, retaining the Greg’s Accessible Extruder geometry.</p>
+<ul>
+<li><strong>Pro:</strong> Belt drive is quieter and smoother than printed gears — may reduce very fine extrusion artifacts (VFAs)</li>
+<li><strong>Pro:</strong> Single-drive architecture aligns with Amalgam philosophy</li>
+<li><strong>Pro:</strong> Large pulley is printed; 608 bearings are easily scavenged</li>
+<li><strong>Con:</strong> Requires purchasing a GT2 metal pulley, 188–200mm GT2 closed-loop belt, and 8mm hobbed bolt — less scavengeable than the Pitan</li>
+<li><strong>Con:</strong> Estimated ~$15–20 AUD in non-salvageable parts</li>
+<li><strong>Con:</strong> Originally designed for NEMA 14; the NEMA 17 remix is community-maintained</li>
+</ul>
+<p>Worth considering for builders prioritising surface finish quality over pure scavengeability, or who already have GT2 belts and pulleys in their parts bin.</p>
+</section>
 <section id="use-what-you-have" class="level3">
 <h3 class="anchored" data-anchor-id="use-what-you-have">Use What You Have</h3>
 <p><strong>This is the most important option.</strong> If you have an extruder in your parts bin—Titan, Hemera, BMG, Sherpa—<strong>use it</strong>. The Amalgam carriage design is adaptable.</p>
@@ -663,6 +695,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>docs/reference/ai-conversations/pitian-v-orbiter.md</code>: Pitan vs Orbiter analysis</li>
 <li><code>docs/reference/ai-conversations/single-v-dual-drive.md</code>: Drive architecture discussion</li>
 <li>Pitan designs: Community versions on Printables/Thingiverse (Printable Titan clone)</li>
+<li>Not So Itty Bitty Belted Extruder: NEMA17 remix of Clough42’s Itty Bitty (<a href="https://www.thingiverse.com/thing:1445337">Thingiverse #1445337</a>, original <a href="https://www.thingiverse.com/thing:389105">#389105</a>)</li>
 <li>E3D Titan: Original design the Pitan is based on</li>
 </ul>
 <hr>

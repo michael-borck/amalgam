@@ -2,17 +2,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.26">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
 <title>dual-rod-motion-system – Amalgam</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -67,15 +73,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-50eb5b89b0de81519140945548e2bba6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -291,7 +296,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/the80-20workshop/amalgam"> <i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/michael-borck/amalgam"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -319,6 +324,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#evolution-of-thinking" id="toc-evolution-of-thinking" class="nav-link" data-scroll-target="#evolution-of-thinking">Evolution of Thinking</a></li>
   <li><a href="#the-physics-discovery" id="toc-the-physics-discovery" class="nav-link" data-scroll-target="#the-physics-discovery">The Physics Discovery</a></li>
+  <li><a href="#what-actually-justifies-dual-8" id="toc-what-actually-justifies-dual-8" class="nav-link" data-scroll-target="#what-actually-justifies-dual-8">What Actually Justifies Dual-8</a></li>
   <li><a href="#the-scavengeability-argument" id="toc-the-scavengeability-argument" class="nav-link" data-scroll-target="#the-scavengeability-argument">The Scavengeability Argument</a></li>
   </ul></li>
   <li><a href="#decision" id="toc-decision" class="nav-link" data-scroll-target="#decision">Decision</a>
@@ -394,7 +400,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="the-physics-discovery">The Physics Discovery</h3>
 <p>Beam deflection follows: <code>δ = F × L³ / (48 × E × I)</code></p>
 <p>When two parallel rods share the load equally: - Each rod carries F/2 - Deflection: <code>δ_dual = (F/2) × L³ / (48 × E × I) = δ_single / 2</code></p>
-<p><strong>Dual 8mm rods achieve LESS deflection than single 10mm rods:</strong></p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -421,18 +426,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<p>While dual 8mm has ~82% the stiffness of single 10mm, the load sharing more than compensates—resulting in better deflection performance.</p>
+<p><strong>Dual 8mm deflects MORE than a single 10mm, not less.</strong> An earlier revision of this ADR claimed the opposite. That was wrong, and the error mattered: stiffness scales with the fourth power of diameter, so the comparison is:</p>
+<pre><code>dual-8    = 2 × 8⁴  =  8192   (arbitrary stiffness units)
+single-10 = 1 × 10⁴ = 10000
+ratio     = 8192 / 10000 = 0.819</code></pre>
+<p>Dual-8 is <strong>81.9% as stiff</strong> as single-10, which means it deflects <strong>~22% more</strong> (0.033mm vs 0.027mm above). Lower stiffness produces more deflection, so the load sharing does <em>not</em> “more than compensate” — it compensates for going down from 10mm to 8mm, and no more.</p>
+<p>Because the ratio <code>2 × 8⁴ / 10⁴</code> is constant, <strong>no span makes dual-8 stiffer than single-10</strong>. The comparison is span-independent; only the absolute magnitudes move.</p>
+<p>The numbers in the table were always correct. The prose contradicted them.</p>
+</section>
+<section id="what-actually-justifies-dual-8" class="level3">
+<h3 class="anchored" data-anchor-id="what-actually-justifies-dual-8">What Actually Justifies Dual-8</h3>
+<p>At Amalgam’s reference bed (220×220mm, 280mm span, 280g Pitan):</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Configuration</th>
+<th>Deflection</th>
+<th>Verdict</th>
+<th>Rod cost</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Dual 8mm</td>
+<td>0.0156mm</td>
+<td>Good</td>
+<td>$0 (scavenged)</td>
+</tr>
+<tr class="even">
+<td>Single 10mm</td>
+<td>0.0128mm</td>
+<td>Excellent</td>
+<td>~$60-80 AUD (purchased)</td>
+</tr>
+</tbody>
+</table>
+<p>Both configurations sit comfortably inside the 0.025mm quality threshold. The 22% difference is immaterial at the reference bed, and <strong>the rods are free</strong>.</p>
+<p>Dual-8 is therefore the correct choice on cost, not on stiffness. The case breaks down at larger spans, where the two configurations diverge toward the threshold: at a 330mm span dual-8 reaches 0.0256mm (acceptable, at the threshold edge) while single-10 stays at 0.0209mm (good). <strong>Builders exceeding 220mm should treat this as a real trade-off rather than a free upgrade</strong> — either buy M10, or shorten the span.</p>
 </section>
 <section id="the-scavengeability-argument" class="level3">
 <h3 class="anchored" data-anchor-id="the-scavengeability-argument">The Scavengeability Argument</h3>
 <p>Amalgam already requires <strong>two donor printers</strong> for triple-Z (ADR-005): - 6-7 NEMA17 motors needed (X, Y×2, Z×3, extruder) - Most donor printers have 4-5 motors - Two donors are the practical minimum</p>
-<p>Given two donors are required anyway: - Two Prusa clones provide 12× 8mm smooth rods - M10 smooth rods are rarely scavengeable - Buying M10 adds $60-80 AUD to build cost - Dual 8mm achieves equal or better performance at zero rod cost</p>
-<p><strong>The scavenger path became the optimal path.</strong></p>
+<p>Given two donors are required anyway: - Two Prusa clones provide 12× 8mm smooth rods - M10 smooth rods are rarely scavengeable - Buying M10 adds $60-80 AUD to build cost - At the reference bed both configurations are within tolerance, so the free option wins on cost</p>
+<p><strong>The scavenger path became the optimal path — on cost, not stiffness.</strong></p>
 </section>
 </section>
 <section id="decision" class="level2">
 <h2 class="anchored" data-anchor-id="decision">Decision</h2>
 <p>We adopt <strong>Dual 8mm Smooth Rods with Vertical Stacking</strong> as the Amalgam reference specification for XY motion.</p>
+<p>This is chosen for <strong>scavengeability and cost</strong>, not for stiffness. Dual 8mm is 81.9% as stiff as a single 10mm rod (see above) and deflects ~22% more; at the 220mm reference bed both are within tolerance, and the 8mm rods are free from two donors while M10 must be purchased.</p>
 <section id="reference-configuration" class="level3">
 <h3 class="anchored" data-anchor-id="reference-configuration">Reference Configuration</h3>
 <p><strong>X-Axis: Two 8mm rods, vertically stacked</strong></p>
@@ -552,7 +594,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol type="1">
 <li><strong>True scavengeability</strong>: All smooth rods from 2 donor printers</li>
 <li><strong>Cost reduction</strong>: Eliminates $60-80 AUD rod purchase</li>
-<li><strong>Equal or better stiffness</strong>: Dual 8mm outperforms single 10mm on deflection</li>
+<li><strong>Adequate stiffness</strong>: At the 220mm reference bed, dual 8mm deflects 0.0156mm vs single-10’s 0.0128mm — both within the 0.025mm quality threshold</li>
 <li><strong>Proven design</strong>: Vertical stacking validated by Voron Legacy</li>
 <li><strong>Parts availability</strong>: 8mm rods/bearings are ubiquitous</li>
 <li><strong>Aligned with triple-Z</strong>: Already need 2 donors for motors</li>
@@ -565,6 +607,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Redesigned brackets</strong>: X-ends and Y-pucks need dual-rod mounts</li>
 <li><strong>Toolhead mass budget</strong>: Keep under 280g for optimal performance</li>
 <li><strong>Slightly more complex assembly</strong>: More rods to align</li>
+<li><strong>~22% more deflection than single 10mm</strong>: Dual 8mm is 81.9% as stiff as single-10 (2 × 8⁴ / 10⁴). Immaterial at the 220mm reference bed, but the gap widens with span — at 330mm dual-8 hits 0.0256mm vs single-10’s 0.0209mm. Beyond 220mm beds, buy M10 or shorten the span.</li>
 </ol>
 </section>
 <section id="what-this-enables" class="level3">
@@ -582,8 +625,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The parametric CAD system supports alternative configurations:</p>
 <section id="m10-single-rod-legacy-reference" class="level3">
 <h3 class="anchored" data-anchor-id="m10-single-rod-legacy-reference">M10 Single-Rod (Legacy Reference)</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>SMOOTH_ROD_DIA <span class="op">=</span> <span class="fl">10.0</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>SMOOTH_ROD_CONFIG <span class="op">=</span> <span class="st">"SINGLE"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>SMOOTH_ROD_DIA <span class="op">=</span> <span class="fl">10.0</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>SMOOTH_ROD_CONFIG <span class="op">=</span> <span class="st">"SINGLE"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>For builders purchasing new rods</li>
 <li>Fewer parts, simpler assembly</li>
@@ -592,8 +635,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="m8-single-rod-budgetcompact" class="level3">
 <h3 class="anchored" data-anchor-id="m8-single-rod-budgetcompact">M8 Single-Rod (Budget/Compact)</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>SMOOTH_ROD_DIA <span class="op">=</span> <span class="fl">8.0</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>SMOOTH_ROD_CONFIG <span class="op">=</span> <span class="st">"SINGLE"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>SMOOTH_ROD_DIA <span class="op">=</span> <span class="fl">8.0</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>SMOOTH_ROD_CONFIG <span class="op">=</span> <span class="st">"SINGLE"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>Limited to ~200mm build volume</li>
 <li>Single donor may suffice</li>
@@ -602,7 +645,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="mgn12-linear-rails-tinker-path" class="level3">
 <h3 class="anchored" data-anchor-id="mgn12-linear-rails-tinker-path">MGN12 Linear Rails (Tinker Path)</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>LINEAR_MOTION <span class="op">=</span> <span class="st">"MGN12"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>LINEAR_MOTION <span class="op">=</span> <span class="st">"MGN12"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>For high-speed experiments (200mm/s+)</li>
 <li>Requires rail purchase (~$150-200 AUD)</li>
@@ -688,6 +731,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
+<p>These are implemented as the thresholds in <code>scripts/analysis/rod_sag.py</code> and are covered by <code>scripts/tests/test_rod_sag.py</code>.</p>
 </section>
 <section id="toolhead-mass-budget" class="level3">
 <h3 class="anchored" data-anchor-id="toolhead-mass-budget">Toolhead Mass Budget</h3>
@@ -705,8 +749,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td>Pitan + pancake NEMA17</td>
 <td>~220g</td>
-<td>0.025mm</td>
-<td>Good</td>
+<td>0.026mm</td>
+<td>Acceptable</td>
 </tr>
 <tr class="even">
 <td>Pitan + standard NEMA17</td>
@@ -726,25 +770,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="span-calculations" class="level3">
 <h3 class="anchored" data-anchor-id="span-calculations">Span Calculations</h3>
-<p>For 220mm build volume (reference spec, see ADR-024):</p>
-<pre><code>X-rod length = BUILD_X + (2 × CARRIAGE_OVERHANG) + CLEARANCE
-            = 220 + 80 + 30 = 330mm
-
-Y-rod length = BUILD_Y + GANTRY_DEPTH + CLEARANCE
-            = 220 + 80 + 30 = 330mm</code></pre>
+<p>For 220mm build volume (reference spec, see ADR-024), the analysis tool derives the X span from the frame sizing constants:</p>
+<pre><code>X-span = BUILD_X + MOTOR_CLEARANCE = 220 + 60 = 280mm</code></pre>
+<p>At this span with a 280g Pitan on dual 8mm, deflection is 0.0156mm (good). See ADR-024 for the note on an earlier revision that assumed a 330mm span.</p>
 </section>
 <section id="cad-parameters" class="level3">
 <h3 class="anchored" data-anchor-id="cad-parameters">CAD Parameters</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reference specification (Dual 8mm)</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>SMOOTH_ROD_DIA <span class="op">=</span> <span class="fl">8.0</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>SMOOTH_ROD_CONFIG <span class="op">=</span> <span class="st">"DUAL_VERTICAL"</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>BEARING_TYPE <span class="op">=</span> <span class="st">"LM8UU"</span>  <span class="co"># or "LM8LUU" for long bearings</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Derived</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>X_ROD_COUNT <span class="op">=</span> <span class="dv">2</span>  <span class="co"># vertically stacked</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>Y_ROD_COUNT <span class="op">=</span> <span class="dv">4</span>  <span class="co"># 2 per side, stacked</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>Z_ROD_COUNT <span class="op">=</span> <span class="dv">2</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>TOTAL_SMOOTH_RODS <span class="op">=</span> <span class="dv">8</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reference specification (Dual 8mm)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>SMOOTH_ROD_DIA <span class="op">=</span> <span class="fl">8.0</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>SMOOTH_ROD_CONFIG <span class="op">=</span> <span class="st">"DUAL_VERTICAL"</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>BEARING_TYPE <span class="op">=</span> <span class="st">"LM8UU"</span>  <span class="co"># or "LM8LUU" for long bearings</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Derived</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>X_ROD_COUNT <span class="op">=</span> <span class="dv">2</span>  <span class="co"># vertically stacked</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>Y_ROD_COUNT <span class="op">=</span> <span class="dv">4</span>  <span class="co"># 2 per side, stacked</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>Z_ROD_COUNT <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>TOTAL_SMOOTH_RODS <span class="op">=</span> <span class="dv">8</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="assembly-sequence" class="level3">
 <h3 class="anchored" data-anchor-id="assembly-sequence">Assembly Sequence</h3>

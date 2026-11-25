@@ -2,17 +2,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.26">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
 <title>tractor_06_extruder_decision – Amalgam</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -67,15 +73,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-50eb5b89b0de81519140945548e2bba6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -291,7 +296,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/the80-20workshop/amalgam"> <i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/michael-borck/amalgam"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -306,7 +311,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../deep-dives/tractor_06_extruder_decision.html">Amalgam: Extruder Selection &amp; Decision Record</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../deep-dives/tractor_06_extruder_decision.html">Amalgam (Neo-Darwin): Extruder Selection &amp; Decision Record</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -363,7 +368,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../deep-dives/tractor_06_extruder_decision.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Amalgam: Extruder Selection &amp; Decision Record</span></a>
+ <span class="menu-text">Amalgam (Neo-Darwin): Extruder Selection &amp; Decision Record</span></a>
   </div>
 </li>
     </ul>
@@ -376,7 +381,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#amalgam-extruder-selection-decision-record" id="toc-amalgam-extruder-selection-decision-record" class="nav-link active" data-scroll-target="#amalgam-extruder-selection-decision-record">Amalgam: Extruder Selection &amp; Decision Record</a>
+  <li><a href="#amalgam-neo-darwin-extruder-selection-decision-record" id="toc-amalgam-neo-darwin-extruder-selection-decision-record" class="nav-link active" data-scroll-target="#amalgam-neo-darwin-extruder-selection-decision-record">Amalgam (Neo-Darwin): Extruder Selection &amp; Decision Record</a>
   <ul class="collapse">
   <li><a href="#executive-summary" id="toc-executive-summary" class="nav-link" data-scroll-target="#executive-summary">Executive Summary</a>
   <ul class="collapse">
@@ -404,6 +409,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#other-extruders-evaluated" id="toc-other-extruders-evaluated" class="nav-link" data-scroll-target="#other-extruders-evaluated">Other Extruders Evaluated</a></li>
   <li><a href="#voron-extruders-stealthburner-clockwork-2-galileo-2" id="toc-voron-extruders-stealthburner-clockwork-2-galileo-2" class="nav-link" data-scroll-target="#voron-extruders-stealthburner-clockwork-2-galileo-2">8. Voron Extruders (Stealthburner, Clockwork 2, Galileo 2)</a></li>
   <li><a href="#complete-bmg-clone-pre-assembled" id="toc-complete-bmg-clone-pre-assembled" class="nav-link" data-scroll-target="#complete-bmg-clone-pre-assembled">9. Complete BMG Clone (Pre-assembled)</a></li>
+  <li><a href="#not-so-itty-bitty-belted-extruder-belt-drive-single" id="toc-not-so-itty-bitty-belted-extruder-belt-drive-single" class="nav-link" data-scroll-target="#not-so-itty-bitty-belted-extruder-belt-drive-single">10. Not So Itty Bitty Belted Extruder (Belt-Drive Single)</a></li>
   </ul></li>
   <li><a href="#the-decision-pitan-as-reference-spec" id="toc-the-decision-pitan-as-reference-spec" class="nav-link" data-scroll-target="#the-decision-pitan-as-reference-spec">The Decision: Pitan as Reference Spec</a>
   <ul class="collapse">
@@ -423,6 +429,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#heritage-option-gregs-wade-pancake-nema17" id="toc-heritage-option-gregs-wade-pancake-nema17" class="nav-link" data-scroll-target="#heritage-option-gregs-wade-pancake-nema17">Heritage Option: Greg’s Wade + Pancake NEMA17</a></li>
   <li><a href="#ultra-scavenger-option-mk8-direct-drive" id="toc-ultra-scavenger-option-mk8-direct-drive" class="nav-link" data-scroll-target="#ultra-scavenger-option-mk8-direct-drive">Ultra-Scavenger Option: MK8 Direct Drive</a></li>
+  <li><a href="#belt-drive-alternative-not-so-itty-bitty-belted-extruder" id="toc-belt-drive-alternative-not-so-itty-bitty-belted-extruder" class="nav-link" data-scroll-target="#belt-drive-alternative-not-so-itty-bitty-belted-extruder">Belt-Drive Alternative: Not So Itty Bitty Belted Extruder</a></li>
   <li><a href="#use-what-you-have" id="toc-use-what-you-have" class="nav-link" data-scroll-target="#use-what-you-have">Use What You Have</a></li>
   </ul></li>
   <li><a href="#spare-parts-strategy" id="toc-spare-parts-strategy" class="nav-link" data-scroll-target="#spare-parts-strategy">Spare Parts Strategy</a>
@@ -437,6 +444,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#the-wade-has-more-torque-isnt-that-better" id="toc-the-wade-has-more-torque-isnt-that-better" class="nav-link" data-scroll-target="#the-wade-has-more-torque-isnt-that-better">“The Wade has more torque — isn’t that better?”</a></li>
   <li><a href="#why-not-a-voron-extruder-theyre-proven." id="toc-why-not-a-voron-extruder-theyre-proven." class="nav-link" data-scroll-target="#why-not-a-voron-extruder-theyre-proven.">“Why not a Voron extruder? They’re proven.”</a></li>
   <li><a href="#can-i-use-other-extruder-instead" id="toc-can-i-use-other-extruder-instead" class="nav-link" data-scroll-target="#can-i-use-other-extruder-instead">“Can I use [other extruder] instead?”</a></li>
+  <li><a href="#what-about-a-belt-driven-extruder-for-even-smoother-extrusion" id="toc-what-about-a-belt-driven-extruder-for-even-smoother-extrusion" class="nav-link" data-scroll-target="#what-about-a-belt-driven-extruder-for-even-smoother-extrusion">“What about a belt-driven extruder for even smoother extrusion?”</a></li>
   </ul></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a>
   <ul class="collapse">
@@ -459,8 +467,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="amalgam-extruder-selection-decision-record" class="level1">
-<h1>Amalgam: Extruder Selection &amp; Decision Record</h1>
+<section id="amalgam-neo-darwin-extruder-selection-decision-record" class="level1">
+<h1>Amalgam (Neo-Darwin): Extruder Selection &amp; Decision Record</h1>
 <p>✅ <strong>Still Relevant:</strong> This deep exploration of extruder options and rationale for Pitan selection remains current. <strong>For canonical decision, see:</strong> - <strong>ADR-019</strong>: Pitan Extruder (formal decision, supersedes ADR-002: Greg’s Wade)</p>
 <p>This deep-dive provides detailed engineering analysis of why Pitan was chosen (cost, scavengability, performance, Klipper compatibility).</p>
 <hr>
@@ -574,6 +582,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>250-350g</td>
 <td>❌ Dual-drive</td>
 </tr>
+<tr class="even">
+<td>10</td>
+<td><strong>Not So Itty Bitty</strong></td>
+<td>✅ Single (belted)</td>
+<td>NEMA17</td>
+<td>~$15-20</td>
+<td>280-320g</td>
+<td>⚠️ Belt-Drive Alt</td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -602,12 +619,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Best balance for Tractor philosophy</td>
 </tr>
 <tr class="even">
+<td>⚠️ Belt-Drive Alt</td>
+<td>Not So Itty Bitty + NEMA17</td>
+<td>~$15-20</td>
+<td>Smoother belt drive, less scavengeable</td>
+</tr>
+<tr class="odd">
 <td>⚠️ Heritage Option</td>
 <td>Wade + Pancake NEMA17</td>
 <td>~$2-5</td>
 <td>RepRap nostalgia, PLA/PETG only</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>⚠️ Ultra-Scavenger</td>
 <td>MK8 Direct</td>
 <td>~$0-6</td>
@@ -665,6 +688,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Pitan, Wade, MK8, E3D Titan</td>
 </tr>
 <tr class="even">
+<td><strong>Single-drive (belted)</strong></td>
+<td>Belt-driven hobbed bolt + idler bearing</td>
+<td>Not So Itty Bitty, Itty Bitty</td>
+</tr>
+<tr class="odd">
 <td><strong>Dual-drive</strong></td>
 <td>Two meshing drive gears, both grip filament</td>
 <td>BMG, Sherpa Mini, Orbiter, LGX Lite</td>
@@ -818,7 +846,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Specifications:</strong> | Attribute | Value | |———–|——-| | Gear Ratio | 3:1 (same as E3D Titan) | | Motor | NEMA17 standard or pancake | | Weight | ~260-300g (with NEMA17) | | Drive | ✅ Single drive gear + idler (Titan-style) |</p>
 <p><strong>Pros:</strong> - ✅ <strong>Single-drive design</strong> — no gear mesh artifacts - <strong>Motor scavengeable</strong> — Uses standard NEMA17 from any donor printer - Fully printable gears and body (true RepRap spirit) - 3:1 gear ratio provides excellent torque - Moderate weight enables M8 rods at 250mm span - Can use pancake NEMA17 for lighter builds - Simple design is easy to maintain and repair</p>
 <p><strong>Cons:</strong> - Heavier than Sherpa Mini (but lighter than Wade) - Single-drive less aggressive than dual-drive for flexible filaments (TPU) - Less community support than Sherpa</p>
-<p><strong>Cost Breakdown:</strong> | Component | Cost (AUD) | |———–|————| | Pitan printed parts (body + gears) | $0.50-1 (filament) | | NEMA17 motor | $0 (scavenged) | | 608 bearings | $0-2 | | Hobbed bolt or MK8 drive gear | $2-5 | | Hardware (springs, fasteners) | $1-2 | | <strong>Total</strong> | <strong>$3.50-10</strong> |</p>
+<p><strong>Cost Breakdown:</strong> | Component | Cost (AUD) | |———–|————| | Pitan printed parts (body + gears) | $0.50-1 (filament) | | NEMA17 motor | $0 (scavenged) | | 695zz bearings (×2) + 623zz bearing (×1) | $2-4 (order from AliExpress — not typically salvageable) | | MK8 drive gear (11mm) | $0-5 (scavenge from donor or purchase) | | M3/M4/M5 hardware + springs | $1-2 | | <strong>Total</strong> | <strong>$3.50-12</strong> |</p>
 <p><strong>Engineering Analysis:</strong></p>
 <p>Rod sag calculations: - M8 @ 250mm span + Pitan/NEMA17: ~0.024mm sag (very good) - M8 @ 280mm span + Pitan/NEMA17: ~0.034mm sag (acceptable) - M10 @ 280mm span + Pitan/NEMA17: ~0.014mm sag (excellent)</p>
 <p><strong>Why Pitan Wins for Amalgam:</strong></p>
@@ -908,6 +936,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 <p><strong>Status: ❌ Not Recommended</strong></p>
+<hr>
+</section>
+<section id="not-so-itty-bitty-belted-extruder-belt-drive-single" class="level3">
+<h3 class="anchored" data-anchor-id="not-so-itty-bitty-belted-extruder-belt-drive-single">10. Not So Itty Bitty Belted Extruder (Belt-Drive Single)</h3>
+<p>A NEMA 17 remix of Clough42’s Itty Bitty Belted Extruder. Uses a GT2 belt instead of printed or metal gears. Based on Greg’s Accessible Extruder geometry with 608 bearings and 8mm hobbed bolt.</p>
+<p><strong>Specifications:</strong> | Attribute | Value | |———–|——-| | Gear Ratio | Belt reduction (varies by pulley sizes) | | Motor | NEMA17 standard | | Weight | ~280-320g (with NEMA17) | | Drive | ✅ Single hobbed bolt + idler (belt driven) |</p>
+<p><strong>Pros:</strong> - ✅ <strong>Single-drive design</strong> — no gear mesh artifacts - GT2 belt is quieter than printed gears — eliminates clicking/whine - Belt compliance absorbs stepper vibration — potentially smoother extrusion - Large pulley is printed; 608 bearings widely scavenged - Uses NEMA17 motor (scavengeable) - Belt has longer wear life than printed gears</p>
+<p><strong>Cons:</strong> - Requires purchasing GT2 metal pulley, 188–200mm GT2 belt loop, and 8mm hobbed bolt - Less scavengeable than Pitan ($10-20 vs $4-10) - Originally designed for NEMA 14; NEMA 17 variant is community remix - 608 bearings are larger/heavier than Pitan’s 695zz - Hobbed bolt not salvageable from typical budget donor printers (they use MK8 gears)</p>
+<p><strong>Verdict:</strong> The best single-drive option for surface finish quality — the belt drive genuinely provides smoother filament feeding than printed gears. However, less scavengeable than the Pitan due to the hobbed bolt, belt, and pulley requirements. Documented as a belt-drive alternative for builders who prioritise print quality over parts-bin convenience.</p>
+<p><strong>Status: ⚠️ Belt-Drive Alternative</strong></p>
 <hr>
 </section>
 </section>
@@ -1017,6 +1055,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="bill-of-materials" class="level3">
 <h3 class="anchored" data-anchor-id="bill-of-materials">Bill of Materials</h3>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 35%">
+<col style="width: 25%">
+<col style="width: 38%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Component</th>
@@ -1031,9 +1074,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>$0.50-1</td>
 </tr>
 <tr class="even">
-<td>Hobbed bolt or MK8 drive gear</td>
-<td>AliExpress/hardware</td>
-<td>$2-5</td>
+<td>MK8 drive gear (11mm)</td>
+<td>AliExpress/scavenge from donor</td>
+<td>$0-5</td>
 </tr>
 <tr class="odd">
 <td>NEMA17 motor</td>
@@ -1041,12 +1084,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>$0</td>
 </tr>
 <tr class="even">
-<td>608 bearings (×2)</td>
-<td>Hardware store/scavenge</td>
-<td>$0-2</td>
+<td>695zz bearings (×2) + 623zz bearing (×1)</td>
+<td>AliExpress/bearing supplier</td>
+<td>$2-4</td>
 </tr>
 <tr class="odd">
-<td>M3 hardware + springs</td>
+<td>M3/M4/M5 hardware + springs</td>
 <td>Hardware store</td>
 <td>$1-2</td>
 </tr>
@@ -1058,10 +1101,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td><strong>Total</strong></td>
 <td></td>
-<td><strong>$4.50-11</strong></td>
+<td><strong>$4.50-13</strong></td>
 </tr>
 </tbody>
 </table>
+<blockquote class="blockquote">
+<p><strong>Scavengeability note:</strong> The MK8 drive gear and NEMA17 motor are directly salvageable from virtually any budget donor printer (Ender 3, Anet A8, CR-10, etc.). The 695zz and 623zz bearings are the only items that typically need ordering — they’re cheap (pack of 10 for a few dollars on AliExpress) but not commonly found in donor printers.</p>
+</blockquote>
 </section>
 <section id="rod-requirements" class="level3">
 <h3 class="anchored" data-anchor-id="rod-requirements">Rod Requirements</h3>
@@ -1244,6 +1290,106 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Key considerations:</strong> - No gear reduction — relies entirely on motor torque - Lightweight (~150-200g) — excellent for M8 rods - Klipper pressure advance helps compensate for 1:1 ratio - Best for moderate speeds with PLA/PETG</p>
 <p><strong>When to choose MK8:</strong> - You already have one from a donor printer - Ultra-minimal budget - Only printing PLA/PETG at moderate speeds - You value simplicity over performance headroom</p>
 </section>
+<section id="belt-drive-alternative-not-so-itty-bitty-belted-extruder" class="level3">
+<h3 class="anchored" data-anchor-id="belt-drive-alternative-not-so-itty-bitty-belted-extruder">Belt-Drive Alternative: Not So Itty Bitty Belted Extruder</h3>
+<p>A NEMA 17 remix (<a href="https://www.thingiverse.com/thing:1445337">Thingiverse #1445337</a>) of Clough42’s Itty Bitty Belted Extruder (<a href="https://www.thingiverse.com/thing:389105">Thingiverse #389105</a>). Uses a GT2 belt instead of printed gears, derived from the Greg’s Accessible Extruder geometry.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Cost (AUD)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Printed body + large pulley</td>
+<td>$0.50-1 (filament)</td>
+</tr>
+<tr class="even">
+<td>NEMA17 motor</td>
+<td>$0 (scavenged)</td>
+</tr>
+<tr class="odd">
+<td>608 bearings (×2)</td>
+<td>$0-2 (scavenged — common in donor printers)</td>
+</tr>
+<tr class="even">
+<td>GT2 metal pulley (small, motor shaft)</td>
+<td>$3-5 (purchase)</td>
+</tr>
+<tr class="odd">
+<td>188–200mm GT2 closed-loop belt</td>
+<td>$3-5 (purchase)</td>
+</tr>
+<tr class="even">
+<td>8mm hobbed bolt + spacers</td>
+<td>$3-5 (purchase)</td>
+</tr>
+<tr class="odd">
+<td>M3/M4 hardware</td>
+<td>$1-2</td>
+</tr>
+<tr class="even">
+<td><strong>Total</strong></td>
+<td><strong>$10-20</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key considerations:</strong> - ✅ Single-drive design (hobbed bolt + idler) — aligns with Amalgam quality philosophy - GT2 belt drive is quieter than printed gears and eliminates gear noise entirely - Belt acts as a compliance element absorbing stepper motor micro-vibration — may reduce very fine extrusion artifacts (VFAs) - Large pulley is printed; 608 bearings are easily scavenged - Uses standard 8mm hobbed bolt geometry (Greg’s Wade heritage) - Originally designed for NEMA 14; the NEMA 17 remix is community-maintained - Less scavengeable than Pitan — GT2 pulley, belt loop, and hobbed bolt all require purchasing</p>
+<p><strong>When to choose Not So Itty Bitty:</strong> - You prioritise surface finish quality and want the smoothest possible filament feeding - You already have GT2 belts and pulleys in your parts bin - You want single-drive architecture but prefer belt compliance over printed gear mesh - You don’t mind ordering a few specialised parts</p>
+<p><strong>Engineering comparison with Pitan:</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 20%">
+<col style="width: 55%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Factor</th>
+<th>Pitan</th>
+<th>Not So Itty Bitty</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Drive method</td>
+<td>Printed spur gears (3:1)</td>
+<td>GT2 belt + printed pulley</td>
+</tr>
+<tr class="even">
+<td>Drive noise</td>
+<td>Some gear mesh noise</td>
+<td>Very quiet (belt)</td>
+</tr>
+<tr class="odd">
+<td>Vibration absorption</td>
+<td>None (rigid gear mesh)</td>
+<td>Belt provides compliance</td>
+</tr>
+<tr class="even">
+<td>Scavengeability</td>
+<td>Excellent (MK8 gear from donor)</td>
+<td>Moderate (belt/pulley/hobbed bolt to purchase)</td>
+</tr>
+<tr class="odd">
+<td>Cost</td>
+<td>$4-10</td>
+<td>$10-20</td>
+</tr>
+<tr class="even">
+<td>Gear/belt durability</td>
+<td>Printed gears may crack at high speeds</td>
+<td>Belt has longer wear life</td>
+</tr>
+<tr class="odd">
+<td>Weight (excl. motor)</td>
+<td>~100-120g</td>
+<td>~100-140g (608 bearings heavier than 695zz)</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="use-what-you-have" class="level3">
 <h3 class="anchored" data-anchor-id="use-what-you-have">Use What You Have</h3>
 <p><strong>This is the most important option.</strong></p>
@@ -1268,37 +1414,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td>Hobbed bolt or MK8 gear</td>
+<td>MK8 drive gear (11mm)</td>
 <td>1</td>
 <td>$2-3</td>
 <td>Drive gear replacement</td>
 </tr>
 <tr class="even">
-<td>608 bearings</td>
+<td>695zz bearings</td>
 <td>4</td>
 <td>$2</td>
-<td>Common wear item</td>
+<td>Hobbed bolt support</td>
 </tr>
 <tr class="odd">
+<td>623zz bearings</td>
+<td>2</td>
+<td>$1</td>
+<td>Idler bearing</td>
+</tr>
+<tr class="even">
 <td>Pitan body (printed)</td>
 <td>1 set</td>
 <td>$0.50</td>
 <td>Print during initial build</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Printed gears</td>
 <td>1 set</td>
 <td>$0.25</td>
 <td>Print spares with body</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>PTFE tube</td>
 <td>1m</td>
 <td>$1</td>
 <td>Cut to length as needed</td>
 </tr>
-<tr class="even">
-<td>M3 hardware assortment</td>
+<tr class="odd">
+<td>M3/M5 hardware assortment</td>
 <td>Various</td>
 <td>$2</td>
 <td>For any repairs</td>
@@ -1345,6 +1497,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="can-i-use-other-extruder-instead">“Can I use [other extruder] instead?”</h3>
 <blockquote class="blockquote">
 <p>“Absolutely! The Pitan is our reference spec, but you’re a maker — use what you have. If there’s a Sherpa, Orbiter, or BMG in your parts bin, use it. The dual-drive concerns are about optimal quality for new builds, not a condemnation of existing equipment. The documentation is a starting point, not a constraint.”</p>
+</blockquote>
+</section>
+<section id="what-about-a-belt-driven-extruder-for-even-smoother-extrusion" class="level3">
+<h3 class="anchored" data-anchor-id="what-about-a-belt-driven-extruder-for-even-smoother-extrusion">“What about a belt-driven extruder for even smoother extrusion?”</h3>
+<blockquote class="blockquote">
+<p>“Great question! The Not So Itty Bitty Belted Extruder is documented as a belt-drive alternative — it’s single-drive (aligning with our philosophy) and the GT2 belt genuinely provides smoother, quieter filament feeding than the Pitan’s printed gears. The trade-off is scavengeability: the belt, GT2 pulley, and hobbed bolt all need purchasing (~$10-20 AUD), whereas the Pitan can be built almost entirely from donor printer parts. If surface finish is your top priority and you don’t mind ordering a few parts, it’s worth a look.”</p>
 </blockquote>
 <hr>
 </section>
@@ -1404,6 +1562,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="extruders-evaluated-1">Extruders Evaluated</h3>
 <ul>
 <li>Pitan Extruder: Community designs on Printables/Thingiverse (Printable Titan clone)</li>
+<li>Not So Itty Bitty Belted Extruder: NEMA17 remix (<a href="https://www.thingiverse.com/thing:1445337">Thingiverse #1445337</a>) of Clough42’s Itty Bitty (<a href="https://www.thingiverse.com/thing:389105">#389105</a>, also on <a href="https://www.printables.com/model/202249-itty-bitty-belted-extruder">Printables</a>)</li>
 <li>Greg’s Wade: Original RepRap design, various community versions</li>
 <li>MK8/MK9: Standard on Creality, Anet, and most budget printers</li>
 <li>Sherpa Mini/Micro: <code>github.com/Annex-Engineering/Sherpa_Mini-Extruder</code></li>
@@ -1427,7 +1586,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Motor torque specifications: LDO Motors datasheets</li>
 </ul>
 <hr>
-<p><em>Document prepared for the Amalgam Project</em> <em>“A Tractor with the Brain of a Racecar”</em></p>
+<p><em>Document prepared for the Amalgam (Neo-Darwin) Project</em> <em>“A Tractor with the Brain of a Racecar”</em></p>
 
 
 </section>
