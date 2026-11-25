@@ -1,6 +1,9 @@
 # OS files
 .DS_Store
 
+# AppleDouble resource forks (created on exFAT/FAT external volumes)
+._*
+
 # AI conversation logs
 docs/AI-Conversations/
 
