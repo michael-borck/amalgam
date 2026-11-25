@@ -23,6 +23,13 @@ def get_parts():
         # Skip __pycache__ and __init__.py
         if "__pycache__" in str(py_file) or py_file.name == "__init__.py":
             continue
+        # Skip AppleDouble resource-fork files (._foo.py), which macOS creates
+        # on exFAT/FAT volumes and which are not real source.
+        if py_file.name.startswith("._") or py_file.name.startswith(".__"):
+            continue
+        if not py_file.name[0].isalpha() and not py_file.name[0].isupper():
+            # Dotfiles that aren't __init__ are metadata, not parts.
+            continue
 
         # Get relative path from amalgam/parts/
         rel_path = py_file.relative_to(parts_dir)
