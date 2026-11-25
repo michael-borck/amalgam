@@ -1,0 +1,9 @@
+---
+title: "Reference"
+---
+
+Facts to look up while you plan a build: which printers to scavenge, what parts you need, and where to buy the ones you can't scavenge.
+
+- [Donor Printer Guide](donor-printer-guide.md): which printers to scavenge and how they map to frame paths
+- [Master Parts List](MASTER_PARTS_LIST.md): complete BOM for all frame paths
+- [Parts Sourcing Guide](parts-sourcing-guide.md): where to buy what you can't scavenge

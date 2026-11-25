@@ -9,6 +9,7 @@ project:
     - "*.md"
     - "!reference/legacy/"
     - "!reference/RENAME-TRACKING.md"
+    - "!adr/template.md"
   resources:
     - CNAME
     - .nojekyll
@@ -42,6 +43,9 @@ website:
             href: guides/maintenance-setup.md
       - text: "Reference"
         menu:
+          - text: "Reference Overview"
+            href: reference/index.qmd
+          - text: "---"
           - text: "Donor Printer Guide"
             href: reference/donor-printer-guide.md
           - text: "Master Parts List"
@@ -95,6 +99,8 @@ website:
             href: articles/reclaiming-the-reprap-legacy.md
           - text: "Reconfiguration of 3D Printing Market"
             href: articles/reconfiguration-of-3d-printing-market.md
+          - text: "Printed Frame Printers"
+            href: articles/printed-frame-printers-context.md
     right:
       - icon: github
         href: https://github.com/michael-borck/amalgam
@@ -112,6 +118,7 @@ website:
 
     - title: "Reference"
       contents:
+        - reference/index.qmd
         - reference/donor-printer-guide.md
         - reference/MASTER_PARTS_LIST.md
         - reference/parts-sourcing-guide.md
@@ -142,6 +149,7 @@ website:
         - articles/core-engineering-truths.md
         - articles/reclaiming-the-reprap-legacy.md
         - articles/reconfiguration-of-3d-printing-market.md
+        - articles/printed-frame-printers-context.md
 
 format:
   html:

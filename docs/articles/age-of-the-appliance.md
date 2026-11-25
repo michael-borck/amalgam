@@ -1,3 +1,7 @@
+---
+title: "3D Printing in the Age of the Appliance"
+---
+
 ## **The Amalgam Context: Sovereignty in the Age of the Appliance**
 
 ### **Subtitles:**

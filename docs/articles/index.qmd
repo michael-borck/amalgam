@@ -13,6 +13,7 @@ These essays provide context for why Amalgam exists --- covering market shifts, 
 | [Core Engineering Truths](core-engineering-truths.md) | Core principles distilled from 20 years of RepRap development --- motion systems, mass, software intelligence |
 | [Reclaiming the RepRap Legacy](reclaiming-the-reprap-legacy.md) | Vision piece for the RepRap 20th anniversary (2027) --- heritage, threaded-rod relevance, market positioning |
 | [Reconfiguration of the 3D Printing Market](reconfiguration-of-3d-printing-market.md) | Market analysis: the 20-year arc from RepRap open-source idealism to integrated prosumer appliances |
+| [Printed Frame Printers and the Case for Steel Rod Frames](printed-frame-printers-context.md) | What The Rook, The 100 and other printed-frame printers show about where plastic frames stop working, and why the Amalgam frame is steel rod |
 
 ## Related
 

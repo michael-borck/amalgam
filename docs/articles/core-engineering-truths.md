@@ -1,3 +1,7 @@
+---
+title: "Core Engineering Truths"
+---
+
 After two decades of RepRap development, the "distilled wisdom" of the 3D printing community has moved beyond just the "Amalgam" philosophy. It now focuses on the balance between physical mass, software intelligence, and environmental control.
 
 Here are the core engineering truths distilled from 20 years of RepRap history:
