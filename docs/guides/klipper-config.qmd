@@ -4,7 +4,7 @@ title: "Klipper Configuration"
 
 # Klipper Configuration
 
-Base configuration for your Tier {{< var tier >}} Amalgam.
+Base configuration for the reference Amalgam: {{< var bed_x >}}×{{< var bed_y >}}×{{< var build_z >}}mm build volume, {{< var z_type_desc >}}.
 
 ## Printer Section
 
@@ -66,7 +66,7 @@ homing_speed: 50
 ### Z Axis
 
 ::: {.panel-tabset}
-## Triple-Z (Tier 2-3)
+## Triple-Z
 
 ```ini
 [stepper_z]
@@ -109,7 +109,7 @@ retries: 5
 retry_tolerance: 0.0075
 ```
 
-## Belt-Z (Tier 1)
+## Belt-Z
 
 ```ini
 [stepper_z]

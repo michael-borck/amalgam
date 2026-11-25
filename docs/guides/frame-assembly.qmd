@@ -23,14 +23,9 @@ Based on your bed size ({{< var bed_x >}}×{{< var bed_y >}}mm):
 
 | Axis | Quantity | Length | Notes |
 |------|----------|--------|-------|
-| X | 4 | {{< var frame_x >}}mm | Front/back horizontals |
-| Y | 4 | {{< var frame_y >}}mm | Left/right horizontals |
-| Z | 4 | {{< var frame_z >}}mm | Vertical uprights |
-
-::: {.callout-tip}
-## Cut List
-If frame dimensions show 0, run `python scripts/analyze.py` to calculate them.
-:::
+| X | 4 | {{< var rod_x_length >}}mm | Front/back horizontals |
+| Y | 4 | {{< var rod_y_length >}}mm | Left/right horizontals |
+| Z | 4 | {{< var rod_z_length >}}mm | Vertical uprights |
 
 ### Hardware
 
@@ -84,8 +79,8 @@ Galvanized rods have thicker coating and more variation. Use `LUMPY_FACTOR = 0.5
 ### Step 2: Bottom Frame
 
 1. Lay out 4 bottom corners
-2. Insert X rods ({{< var frame_x >}}mm) through front/back
-3. Insert Y rods ({{< var frame_y >}}mm) through left/right
+2. Insert X rods ({{< var rod_x_length >}}mm) through front/back
+3. Insert Y rods ({{< var rod_y_length >}}mm) through left/right
 4. Hand-tighten all nuts
 
 ```
@@ -101,7 +96,7 @@ Galvanized rods have thicker coating and more variation. Use `LUMPY_FACTOR = 0.5
 
 ### Step 3: Add Verticals
 
-1. Thread Z rods ({{< var frame_z >}}mm) through bottom corners
+1. Thread Z rods ({{< var rod_z_length >}}mm) through bottom corners
 2. Attach top corners
 3. Hand-tighten
 

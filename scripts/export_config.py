@@ -4,10 +4,16 @@ Export config.py values to Quarto variables format.
 
 Usage:
     python scripts/export_config.py > docs/_variables.yml
+    python scripts/export_config.py --config cad/config.py.example
     python scripts/export_config.py --tier 3    # Tier-specific
 
 This generates a YAML file that Quarto can use for conditional content
 and variable substitution in documentation.
+
+Frame dimensions and rod lengths are calculated from the build volume by
+analysis.frame_sizing, the same module scripts/analyze.py uses. The published
+docs/_variables.yml is the export of cad/config.py.example, and
+scripts/tests/test_export_config.py checks that it stays that way.
 """
 
 import sys
@@ -17,14 +23,13 @@ from pathlib import Path
 scripts_path = Path(__file__).parent
 sys.path.insert(0, str(scripts_path))
 
+DEFAULT_CONFIG = scripts_path.parent / "cad" / "config.py"
 
-def get_config_values() -> dict:
-    """Load config.py and extract values."""
-    cad_path = scripts_path.parent / "cad"
-    config_path = cad_path / "config.py"
 
+def get_config_values(config_path: Path) -> dict:
+    """Load a config file and extract values."""
     if not config_path.exists():
-        print("Error: cad/config.py not found", file=sys.stderr)
+        print(f"Error: {config_path} not found", file=sys.stderr)
         print("Run 'python scripts/wizard.py' first", file=sys.stderr)
         sys.exit(1)
 
@@ -32,7 +37,7 @@ def get_config_values() -> dict:
     try:
         exec(config_path.read_text(), config_globals)
     except Exception as e:
-        print(f"Error reading config.py: {e}", file=sys.stderr)
+        print(f"Error reading {config_path.name}: {e}", file=sys.stderr)
         sys.exit(1)
 
     return {
@@ -41,27 +46,57 @@ def get_config_values() -> dict:
     }
 
 
-def export_quarto_variables():
-    """Export config values as Quarto variables."""
-    config = get_config_values()
+def require(config: dict, key: str):
+    """Return config[key], or stop. The guides print it, so it has no default."""
+    if key not in config:
+        print(f"Error: {key} is not defined in the config", file=sys.stderr)
+        print(
+            "The guides print this value, so it cannot be defaulted.", file=sys.stderr
+        )
+        sys.exit(1)
+    return config[key]
 
-    # Get build volume
-    build_volume = config.get("BUILD_VOLUME", {})
+
+def export_quarto_variables(config_path: Path):
+    """Export config values as Quarto variables."""
+    from analysis.frame_sizing import calculate_frame_size
+
+    config = get_config_values(config_path)
+
+    # Get build volume, keyed "X", "Y" and "Z"
+    build_volume = {k.upper(): v for k, v in require(config, "BUILD_VOLUME").items()}
+    missing = [axis for axis in ("X", "Y", "Z") if axis not in build_volume]
+    if missing:
+        print(f"Error: BUILD_VOLUME has no {', '.join(missing)}", file=sys.stderr)
+        sys.exit(1)
+    bed_x, bed_y, build_z = (build_volume[axis] for axis in ("X", "Y", "Z"))
+
+    z_configuration = config.get("Z_CONFIGURATION", "triple")
+    triple_z = bool(config.get("TRIPLE_Z", z_configuration == "triple"))
+    extruder_type = config.get("EXTRUDER_TYPE", "PITAN")
+
+    frame = calculate_frame_size(
+        bed_x,
+        bed_y,
+        build_z,
+        extruder_type=extruder_type,
+        triple_z=triple_z,
+    )
 
     # Build the variables dict
     variables = {
         # Bed/build volume
-        "bed_x": config.get("BED_SIZE_X", build_volume.get("x", 235)),
-        "bed_y": config.get("BED_SIZE_Y", build_volume.get("y", 235)),
-        "build_z": build_volume.get("z", config.get("BUILD_Z", 250)),
+        "bed_x": bed_x,
+        "bed_y": bed_y,
+        "build_z": build_z,
 
         # Rods
-        "smooth_rod_dia": config.get("SMOOTH_ROD_DIA", 10.0),
+        "smooth_rod_dia": require(config, "SMOOTH_ROD_DIA"),
         "m10_nominal": config.get("M10_NOMINAL_DIA", 10.0),
         "lumpy_factor": config.get("LUMPY_FACTOR", 0.5),
 
         # Extruder
-        "extruder_type": config.get("EXTRUDER_TYPE", "PITAN"),
+        "extruder_type": extruder_type,
         "extruder_mass": config.get("EXTRUDER_MASS", 280),
 
         # Board
@@ -70,14 +105,18 @@ def export_quarto_variables():
 
         # Tier and Z config
         "tier": config.get("BUILD_TIER", 3),
-        "z_config": config.get("Z_CONFIGURATION", "triple"),
+        "z_config": "triple" if triple_z else "belt",
         "has_canbus": config.get("HAS_CANBUS", True),
 
-        # Frame dimensions
-        "frame_x": config.get("FRAME_X", 0),
-        "frame_y": config.get("FRAME_Y", 0),
-        "frame_z": config.get("FRAME_Z", 0),
-        "x_span": config.get("X_SPAN", 0),
+        # Frame dimensions: between the uprights, then the M10 rods to cut
+        "frame_x": frame.frame_x,
+        "frame_y": frame.frame_y,
+        "frame_z": frame.frame_z,
+        "rod_x_length": frame.rod_x_length,
+        "rod_y_length": frame.rod_y_length,
+        "rod_z_length": frame.rod_z_length,
+        "x_span": frame.x_span,
+        "y_span": frame.y_span,
 
         # Hotend
         "hotend_type": config.get("HOTEND_TYPE", "E3D_V6_CLONE"),
@@ -110,12 +149,18 @@ def export_quarto_variables():
     }
     variables["tier_name"] = tier_names.get(tier, f"Tier {tier}")
 
-    z_config = variables["z_config"]
-    variables["z_type_desc"] = "Triple Independent Z" if z_config == "triple" else "Belt-Driven Z"
+    variables["z_type_desc"] = "Triple Independent Z" if triple_z else "Belt-Driven Z"
 
     # Output as YAML
-    print("# Auto-generated from cad/config.py")
-    print("# Run: python scripts/export_config.py > docs/_variables.yml")
+    try:
+        source = config_path.resolve().relative_to(scripts_path.resolve().parent)
+    except ValueError:
+        source = config_path.name
+    print(f"# Auto-generated from {source} by scripts/export_config.py")
+    print(
+        "# Regenerate: python scripts/export_config.py --config <config> "
+        "> docs/_variables.yml"
+    )
     print("")
 
     for key, value in variables.items():
@@ -125,7 +170,8 @@ def export_quarto_variables():
             # Quote strings
             print(f'{key}: "{value}"')
         elif isinstance(value, (int, float)):
-            print(f"{key}: {value}")
+            # Whole numbers print without a trailing .0
+            print(f"{key}: {int(value) if float(value).is_integer() else value}")
         elif isinstance(value, list):
             # Format lists
             print(f"{key}:")
@@ -188,9 +234,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Export config.py to Quarto variables")
     parser.add_argument("--tier", type=int, choices=[0, 1, 2, 3],
                         help="Export tier-specific config")
+    parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG,
+                        help="Config file to export (default: cad/config.py)")
     args = parser.parse_args()
 
     if args.tier is not None:
         export_tier_config(args.tier)
     else:
-        export_quarto_variables()
+        export_quarto_variables(args.config)
