@@ -13,7 +13,11 @@ from typing import Optional
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from analysis.rod_sag import calculate_rod_sag, RodSagResult
+from analysis.rod_sag import (
+    calculate_rod_sag,
+    rods_for_config,
+    RodSagResult,
+)
 from analysis.frame_sizing import calculate_frame_size, FrameSizeResult
 from analysis.acceleration import (
     calculate_max_acceleration,
@@ -54,6 +58,7 @@ def run_full_analysis(
     extruder_type: str,
     extruder_mass: int,
     triple_z: bool = True,
+    rod_config: str = "DUAL_VERTICAL",
 ) -> AnalysisReport:
     """
     Run complete engineering analysis.
@@ -66,11 +71,14 @@ def run_full_analysis(
         extruder_type: Extruder type ID
         extruder_mass: Toolhead mass in grams
         triple_z: Whether using triple-Z configuration
+        rod_config: SMOOTH_ROD_CONFIG value (ADR-021). "DUAL_VERTICAL" is
+            the reference; "SINGLE" uses one rod per axis.
 
     Returns:
         AnalysisReport with all results and recommendations
     """
     recommendations = []
+    rod_count = rods_for_config(rod_config)
 
     # Calculate frame sizing
     frame = calculate_frame_size(
@@ -86,6 +94,7 @@ def run_full_analysis(
         rod_diameter=smooth_rod_diameter,
         span=frame.x_span,
         toolhead_mass=extruder_mass,
+        rod_count=rod_count,
     )
 
     # Calculate acceleration limits
@@ -93,6 +102,7 @@ def run_full_analysis(
         toolhead_mass=extruder_mass,
         rod_diameter=smooth_rod_diameter,
         span=frame.x_span,
+        rod_count=rod_count,
     )
 
     # Get Klipper settings
@@ -107,8 +117,14 @@ def run_full_analysis(
         recommendations.append("Configuration will work well for most printing")
     elif sag.verdict == "marginal":
         verdict = "marginal"
-        recommendations.append("Consider M10 rods for better rigidity")
-        if smooth_rod_diameter == 8.0:
+        if rod_count > 1:
+            recommendations.append(
+                f"{rod_count}x{smooth_rod_diameter:.0f}mm rods are already sharing "
+                f"the load (ADR-021); consider a shorter span or lighter toolhead"
+            )
+        else:
+            recommendations.append("Consider M10 rods, or dual-rod mounting (ADR-021)")
+        if smooth_rod_diameter == 8.0 and rod_count == 1:
             recommendations.append("M8 rods may limit print quality at higher speeds")
     else:
         verdict = "review"

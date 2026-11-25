@@ -16,6 +16,17 @@ from .boards import BOARDS, BoardSpec, boards_can_combine_for_drivers
 from .extruders import EXTRUDERS, ExtruderSpec
 from .motors import get_motor_count_for_tier, get_driver_count_for_tier
 
+try:
+    from analysis.rod_sag import rods_for_config
+except ImportError:  # pragma: no cover - standalone registry use
+    # Fallback so the registry can be imported without the analysis package.
+    _ROD_CONFIGS = {"SINGLE": 1, "DUAL_VERTICAL": 2, "DUAL": 2, "DUAL_HORIZONTAL": 2}
+
+    def rods_for_config(rod_config: Optional[str]) -> int:
+        if not rod_config:
+            return 1
+        return _ROD_CONFIGS.get(rod_config.upper(), 1)
+
 
 class Severity(Enum):
     """Severity level for compatibility issues."""
@@ -220,6 +231,7 @@ def check_compatibility(
     rod_diameter: float,
     bed_size_x: int,
     bed_size_y: int,
+    rod_config: str = "DUAL_VERTICAL",
 ) -> list[CompatibilityIssue]:
     """
     Check component compatibility and generate warnings.
@@ -235,6 +247,8 @@ def check_compatibility(
         rod_diameter: Smooth rod diameter in mm
         bed_size_x: Bed X dimension
         bed_size_y: Bed Y dimension
+        rod_config: SMOOTH_ROD_CONFIG value (ADR-021). Dual-rod mounting
+            halves deflection, so rod warnings relax for dual configs.
 
     Returns:
         List of compatibility issues
@@ -276,18 +290,35 @@ def check_compatibility(
     # Check bed/rod combination
     max_span = max(bed_size_x, bed_size_y) + 100  # Approximate X gantry span
 
-    if rod_diameter == 8.0 and max_span > 300:
+    # Dual-rod mounting (ADR-021) halves deflection, so single-rod span
+    # thresholds can be relaxed by the rod count.
+    rod_count = rods_for_config(rod_config)
+    effective_span = max_span / rod_count
+
+    if rod_diameter == 8.0 and effective_span > 300:
         issues.append(CompatibilityIssue(
             severity=Severity.WARNING,
             message=f"M8 rods with {max_span}mm span may have excessive deflection",
-            suggestion="Upgrade to M10 rods for larger beds",
+            suggestion=(
+                "Upgrade to M10 rods for larger beds"
+                if rod_count == 1
+                else "Dual-8 mounting is already in use; consider M10 or a smaller bed"
+            ),
         ))
 
     if rod_diameter == 8.0 and extruder.mass_grams > 300:
+        # Dual rods share the load, so the single-rod error downgrades to a warning
+        heavy_severity = Severity.WARNING if rod_count > 1 else Severity.ERROR
+        heavy_suggestion = (
+            "Use M10+ rods or switch to lighter extruder (Pitan: 280g)"
+            if rod_count == 1
+            else "Dual-8 sharing already helps; a lighter extruder (Pitan: 280g) "
+                 "is still the cheapest fix"
+        )
         issues.append(CompatibilityIssue(
-            severity=Severity.ERROR,
-            message=f"Heavy extruder ({extruder.mass_grams}g) on M8 rods will cause print quality issues",
-            suggestion="Use M10+ rods or switch to lighter extruder (Pitan: 280g)",
+            severity=heavy_severity,
+            message=f"Heavy extruder ({extruder.mass_grams}g) on M8 rods may cause print quality issues",
+            suggestion=heavy_suggestion,
         ))
 
     # Large bed power warning

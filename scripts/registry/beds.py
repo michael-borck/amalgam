@@ -39,6 +39,7 @@ class BedSpec:
 # =============================================================================
 
 COMMON_BED_SIZES = {
+    "anet_a8": (220, 220, "Anet A8 (REFERENCE SPEC)"),
     "ender3": (235, 235, "Ender 3 / CR-10 Mini"),
     "prusa_mk3": (250, 210, "Prusa MK3"),
     "cr10": (300, 300, "CR-10 / Ender 3 Max"),
@@ -56,6 +57,24 @@ BEDS = {
     # -------------------------------------------------------------------------
     # Donor beds (common sources)
     # -------------------------------------------------------------------------
+    "ANET_A8_BED": BedSpec(
+        id="ANET_A8_BED",
+        name="Anet A8 Bed (220x220)",
+        size_x=220,
+        size_y=220,
+        heater_power=150,
+        voltage=24,
+        mass_grams=700,
+        material="Aluminum + PCB heater",
+        donor_source="Anet A8, Anet A6, Tronxy X3",
+        typical_price_aud=0,
+        notes=[
+            "REFERENCE SPEC (ADR-024): Anet A8 bed size",
+            "Scavengeable from Prusa clones and Rod+Sheet donors",
+            "Comes with 6x 8mm rods for Dual-8 motion (ADR-021)",
+        ],
+    ),
+
     "ENDER3_BED": BedSpec(
         id="ENDER3_BED",
         name="Ender 3 Bed (235x235)",
@@ -68,7 +87,7 @@ BEDS = {
         donor_source="Ender 3, Ender 3 Pro, Ender 3 V2",
         typical_price_aud=0,
         notes=[
-            "REFERENCE SPEC: Most common donor bed",
+            "Most common donor bed",
             "24V, 200W heater",
             "Good size/power balance",
         ],

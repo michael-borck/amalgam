@@ -14,6 +14,10 @@ Theory:
     - L = Span length (mm)
     - E = Young's modulus (steel ≈ 200 GPa)
     - I = Second moment of area (π * d^4 / 64 for circular rod)
+
+    For N parallel rods sharing the load equally (ADR-021), each rod
+    carries F/N, so deflection scales as 1/N:
+    deflection = (F * L^3) / (N * 48 * E * I)
 """
 
 import math
@@ -36,6 +40,33 @@ class RodSagResult:
     deflection: float  # mm
     verdict: str  # "excellent", "good", "acceptable", "marginal", "excessive"
     recommendation: str
+    rod_count: int = 1  # parallel rods sharing the load
+
+
+# Rod configurations per ADR-021 (Dual-Rod Motion System).
+# N parallel rods share the load equally, so deflection scales as 1/N:
+#     δ_N = F * L^3 / (N * 48 * E * I)
+ROD_CONFIGS = {
+    "SINGLE": 1,
+    "DUAL_VERTICAL": 2,
+    "DUAL": 2,
+    "DUAL_HORIZONTAL": 2,
+}
+
+
+def rods_for_config(rod_config: Optional[str]) -> int:
+    """
+    Map an SMOOTH_ROD_CONFIG value to a parallel rod count.
+
+    Args:
+        rod_config: e.g. "DUAL_VERTICAL" (reference per ADR-021) or "SINGLE"
+
+    Returns:
+        Number of rods sharing the load. Unknown/None values fall back to 1.
+    """
+    if not rod_config:
+        return 1
+    return ROD_CONFIGS.get(rod_config.upper(), 1)
 
 
 def calculate_second_moment(diameter_mm: float) -> float:
@@ -59,6 +90,7 @@ def calculate_rod_sag(
     span: float,
     toolhead_mass: float,
     acceleration: Optional[float] = None,
+    rod_count: int = 1,
 ) -> RodSagResult:
     """
     Calculate rod deflection under toolhead load.
@@ -68,6 +100,8 @@ def calculate_rod_sag(
         span: Unsupported span length in mm (e.g., 250, 300)
         toolhead_mass: Toolhead mass in grams (e.g., 280 for Pitan)
         acceleration: Optional acceleration in mm/s² for dynamic loading
+        rod_count: Number of parallel rods sharing the load (ADR-021).
+            Deflection scales as 1/rod_count.
 
     Returns:
         RodSagResult with deflection and recommendations
@@ -93,8 +127,20 @@ def calculate_rod_sag(
 
     # Calculate deflection using beam equation
     # δ = F * L³ / (48 * E * I)
-    deflection_m = (F_total * (L ** 3)) / (48 * STEEL_YOUNGS_MODULUS * I)
+    # N parallel rods share the load equally, so divide by rod_count (ADR-021)
+    if rod_count < 1:
+        raise ValueError(f"rod_count must be >= 1, got {rod_count}")
+    deflection_m = (F_total * (L ** 3)) / (
+        rod_count * 48 * STEEL_YOUNGS_MODULUS * I
+    )
     deflection_mm = deflection_m * 1000
+
+    # Describe the rod config for recommendations
+    rod_desc = (
+        f"{rod_count}x M{int(rod_diameter)}"
+        if rod_count > 1
+        else f"M{int(rod_diameter)}"
+    )
 
     # Determine verdict based on deflection thresholds
     # These thresholds are based on typical layer heights and quality requirements
@@ -106,18 +152,21 @@ def calculate_rod_sag(
         recommendation = "Good for most printing applications."
     elif deflection_mm < 0.035:
         verdict = "acceptable"
-        recommendation = "Acceptable for standard prints. Consider M10 for demanding work."
+        recommendation = (
+            f"Acceptable for standard prints. Consider M10 or an additional "
+            f"{rod_desc} rod for demanding work."
+        )
     elif deflection_mm < 0.050:
         verdict = "marginal"
         recommendation = (
-            "May affect print quality at fine layer heights. "
-            "Consider upgrading to M10 rods or reducing span."
+            f"May affect print quality at fine layer heights. "
+            f"Consider upgrading to M10 rods or reducing span."
         )
     else:
         verdict = "excessive"
         recommendation = (
-            "Excessive deflection will affect print quality. "
-            "Upgrade to larger diameter rods or reduce build volume."
+            f"Excessive deflection will affect print quality. "
+            f"Upgrade to larger diameter rods or reduce build volume."
         )
 
     return RodSagResult(
@@ -127,6 +176,7 @@ def calculate_rod_sag(
         deflection=round(deflection_mm, 4),
         verdict=verdict,
         recommendation=recommendation,
+        rod_count=rod_count,
     )
 
 
@@ -134,6 +184,7 @@ def compare_rod_options(
     span: float,
     toolhead_mass: float,
     rod_sizes: list[float] = [8.0, 10.0, 12.0],
+    rod_count: int = 1,
 ) -> list[RodSagResult]:
     """
     Compare deflection across multiple rod sizes.
@@ -142,12 +193,13 @@ def compare_rod_options(
         span: Unsupported span length in mm
         toolhead_mass: Toolhead mass in grams
         rod_sizes: List of rod diameters to compare
+        rod_count: Number of parallel rods sharing the load (ADR-021)
 
     Returns:
         List of RodSagResult for each rod size
     """
     return [
-        calculate_rod_sag(rod_dia, span, toolhead_mass)
+        calculate_rod_sag(rod_dia, span, toolhead_mass, rod_count=rod_count)
         for rod_dia in rod_sizes
     ]
 

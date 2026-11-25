@@ -34,6 +34,7 @@ class AccelerationResult:
     max_velocity: float  # mm/s
 
     notes: list[str]
+    rod_count: int = 1  # parallel rods sharing the load (ADR-021)
 
 
 # Physics constants
@@ -45,6 +46,7 @@ def calculate_max_acceleration(
     rod_diameter: float,
     span: float,
     max_deflection: float = 0.025,
+    rod_count: int = 1,
 ) -> AccelerationResult:
     """
     Calculate maximum safe acceleration for print quality.
@@ -59,16 +61,27 @@ def calculate_max_acceleration(
         rod_diameter: Smooth rod diameter in mm
         span: Unsupported span in mm
         max_deflection: Maximum acceptable total deflection in mm
+        rod_count: Number of parallel rods sharing the load (ADR-021).
+            More rods means less deflection, so more acceleration headroom.
 
     Returns:
         AccelerationResult with limits and recommendations
     """
-    from .rod_sag import calculate_rod_sag
+    if __package__:
+        from .rod_sag import calculate_rod_sag
+    else:  # running as a script (python scripts/analysis/acceleration.py)
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+        from analysis.rod_sag import calculate_rod_sag
 
     notes = []
 
     # Calculate static sag first
-    static_result = calculate_rod_sag(rod_diameter, span, toolhead_mass)
+    static_result = calculate_rod_sag(
+        rod_diameter, span, toolhead_mass, rod_count=rod_count
+    )
     static_sag = static_result.deflection
 
     # Available deflection budget for dynamic loading
@@ -93,6 +106,7 @@ def calculate_max_acceleration(
     # Structural limit (more generous, based on rod yield strength)
     # This is a simplified estimate - real limit depends on many factors
     # Rule of thumb: M8 ≈ 5000, M10 ≈ 10000, M12 ≈ 15000 mm/s²
+    # Doubling the load-bearing rods doubles the force each can carry.
     structural_limits = {
         8.0: 5000,
         10.0: 10000,
@@ -100,8 +114,8 @@ def calculate_max_acceleration(
     }
     max_accel_structural = structural_limits.get(
         rod_diameter,
-        8000  # Default for unknown sizes
-    )
+        8000,  # Default for unknown sizes
+    ) * rod_count
 
     # Take the more conservative of quality and structural limits
     effective_max = min(max_accel_quality, max_accel_structural)
@@ -126,9 +140,15 @@ def calculate_max_acceleration(
         notes.append("Low acceleration limits velocity potential")
 
     # Add contextual notes
-    if rod_diameter == 8.0 and span > 280:
+    if rod_diameter == 8.0 and rod_count == 1 and span > 280:
         notes.append("M8 rods at this span limit acceleration significantly")
         notes.append("Consider M10 rods or smaller bed for better performance")
+
+    if rod_diameter == 8.0 and rod_count > 1:
+        notes.append(
+            f"Dual {int(rod_diameter)}mm rods share the load (ADR-021), "
+            f"halving deflection vs single-rod"
+        )
 
     if toolhead_mass > 350:
         notes.append("Heavy toolhead reduces acceleration headroom")
@@ -150,23 +170,26 @@ def calculate_max_acceleration(
         recommended_velocity=recommended_velocity,
         max_velocity=max_velocity,
         notes=notes,
+        rod_count=rod_count,
     )
 
 
 def compare_configurations(
     configurations: list[tuple[float, float, float]],  # (mass, rod_dia, span)
+    rod_count: int = 1,
 ) -> list[AccelerationResult]:
     """
     Compare acceleration limits across multiple configurations.
 
     Args:
         configurations: List of (toolhead_mass, rod_diameter, span) tuples
+        rod_count: Number of parallel rods sharing the load (ADR-021)
 
     Returns:
         List of AccelerationResult for each configuration
     """
     return [
-        calculate_max_acceleration(mass, rod_dia, span)
+        calculate_max_acceleration(mass, rod_dia, span, rod_count=rod_count)
         for mass, rod_dia, span in configurations
     ]
 
@@ -212,3 +235,12 @@ if __name__ == "__main__":
         print(f"  Klipper settings:")
         print(f"    max_velocity: {klipper['max_velocity']}")
         print(f"    max_accel: {klipper['max_accel']}")
+
+    # ADR-021 reference: dual 8mm at a 330mm span (220mm bed + overhangs)
+    print("\n" + "-" * 50)
+    print("ADR-021 reference - dual M8 @ 330mm span, 280g Pitan:")
+    ref = calculate_max_acceleration(280, 8.0, 330, rod_count=2)
+    print(f"  Recommended: {ref.recommended_accel:.0f} mm/s²")
+    print(f"  Velocity range: {ref.recommended_velocity}-{ref.max_velocity} mm/s")
+    for note in ref.notes:
+        print(f"  - {note}")

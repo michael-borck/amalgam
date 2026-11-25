@@ -88,6 +88,38 @@ Calculates:
 - Maximum safe acceleration
 - Recommended Klipper settings
 
+### Rod Configuration
+
+Rod sag accounts for the ADR-021 dual-rod mounting. Two parallel rods share the
+load, so deflection scales as 1/N:
+
+```
+δ_N = F · L³ / (N · 48 · E · I)
+```
+
+Set via `SMOOTH_ROD_CONFIG` in `cad/config.py`:
+
+| Value | Rods | Notes |
+|-------|------|-------|
+| `DUAL_VERTICAL` | 2 | Reference spec (ADR-021) |
+| `SINGLE` | 1 | Single rod per axis |
+
+Note that dual 8mm is **81.9% as stiff as single 10mm** (`2 × 8⁴ / 10⁴`) and
+deflects ~22% more. The reference config uses dual 8mm because the rods are free
+from two donors, not because they are stiffer. See ADR-021.
+
+## Tests
+
+```bash
+python -m pytest scripts/tests/ -q
+```
+
+`test_rod_sag.py` pins the physics against the values published in the ADRs,
+including the dual-8 vs single-10 relationship. `test_scripts_cli.py` smoke-tests
+the CLIs and verifies the analysis modules still run standalone.
+
+Run these before opening a PR — CI runs the same suite.
+
 ## What-If Analysis
 
 Explore trade-offs before committing:

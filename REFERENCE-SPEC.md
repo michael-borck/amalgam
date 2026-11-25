@@ -11,8 +11,8 @@ This document defines the specific hardware choices for the Amalgam. For the phi
 | Component | Reference Spec | ADR |
 |-----------|---------------|-----|
 | **Frame Skeleton** | M10 Threaded Rods (Bright Zinc or Galvanized) | [ADR-001](docs/adr/001-m10-skeleton.md) |
-| **Smooth Rods (X-Y)** | M10 Precision Ground | [ADR-003](docs/adr/003-smooth-rods.md) |
-| **Smooth Rods (Z)** | M8 (sufficient with Triple-Z) | [ADR-003](docs/adr/003-smooth-rods.md) |
+| **Smooth Rods (X-Y)** | 2× 8mm Precision Ground (dual, vertically stacked) | [ADR-021](docs/adr/021-dual-rod-motion-system.md) |
+| **Smooth Rods (Z)** | 2× 8mm (sufficient with Triple-Z) | [ADR-021](docs/adr/021-dual-rod-motion-system.md) |
 | **Extruder** | Pitan (3:1 geared, single-drive) | [ADR-019](docs/adr/019-pitan-extruder.md) |
 | **Hotend** | E3D V6 + CHT Clone Nozzle | [ADR-004](docs/adr/004-v6-cht.md) |
 | **Z-System** | Triple-Z Independent Motors | [ADR-005](docs/adr/005-triple-z.md) |
@@ -25,10 +25,10 @@ This document defines the specific hardware choices for the Amalgam. For the phi
 ## Project Goals
 
 * **Price Target:** < $300 AUD (Beating the Bambu A1 Mini)
-* **Build Volume:** ~250mm³ (Equalling or Exceeding the Prusa MK4)
+* **Build Volume:** 220×220×220mm (Anet A8 scavenger bed size, ADR-024)
 * **Quality:** High-precision via Klipper Input Shaping and 3-Point Z-Tilt
 * **Speed:** 70-120mm/s with tuned Input Shaping
-* **Accuracy:** ±0.1mm dimensional consistency (Tier 3+ with M10 rods)
+* **Accuracy:** ±0.1mm dimensional consistency (Tier 3+ with dual 8mm rods)
 * **Reliability:** Prints identically on Day 1000 as on Day 1
 
 ---
@@ -37,7 +37,7 @@ This document defines the specific hardware choices for the Amalgam. For the phi
 
 Amalgam operates within a wide envelope. Before purchasing materials:
 
-1. **Salvage or Buy Rods?** (M8 salvage vs M10 new)
+1. **Which Donors?** (Bed and rod size follow the donor - see ADR-024)
 2. **Belted-Z or Triple-Z?** (1 motor vs 3 motors)
 3. **Single Board or Multi-MCU?** (MKS SKIPR vs salvaged boards)
 4. **Extruder Choice?** (Pitan reference vs Wade heritage vs what you have)
@@ -107,13 +107,18 @@ Three independent Z-motors for automated Klipper Z-Tilt calibration:
 
 | Axis | Reference Spec | Scavenger Option |
 |------|---------------|------------------|
-| **X-Y** | M10 Precision Ground | M8 from donor |
-| **Z** | M8 (Triple-Z reduces deflection concerns) | M8 |
+| **X-Y** | 2× 8mm Precision Ground (vertical stack) | 4× 8mm from two donors |
+| **Z** | 2× 8mm (Triple-Z reduces deflection concerns) | 2× 8mm |
+
+Per ADR-021, dual 8mm rods share the load. They deflect ~22% more than a single
+10mm rod (81.9% as stiff), but at the 220mm reference bed both sit within the
+0.025mm quality threshold, and 8mm rods are free from two donors while M10 must
+be purchased. The choice is made on cost, not stiffness.
 
 **Why Not Rollers?**
 1. Can't mount to threaded-rod frame
 2. Rollers wear out and flat-spot
-3. 10mm smooth rods on M10 frame = "forever machine"
+3. Dual 8mm on the M10 frame = "forever machine"
 
 ---
 
@@ -126,7 +131,7 @@ All prices estimated in AUD (2026).
 | **Logic Path** | Single-Z Belt | Triple-Z | Triple-Z + SKIPR |
 | **Mainboard** | Salvaged | Salvaged | MKS SKIPR |
 | **Klipper Host** | Laptop ($0) | RPi Zero 2W (~$32) | Integrated |
-| **Linear Motion** | Salvaged M8 | Salvaged M8 | Buy M10 (~$65) |
+| **Linear Motion** | Salvaged M8 | Salvaged M8 | Salvaged 8mm |
 | **Motors** | 4 Salvaged | 4 Salvaged + 2 New | 4 Salvaged + 2 New |
 | **Skeleton** | M10 Hardware (~$40) | M10 Hardware (~$40) | M10 Hardware (~$40) |
 | **TOTAL** | **~$80** | **~$200** | **~$270** |
@@ -149,8 +154,8 @@ All prices estimated in AUD (2026).
 
 ### Gearing & Motion
 * **Extruder:** Pitan printed parts + MK8 drive gear ($2-5)
-* **Bearings:** 12× LM10UU (for M10) or LM8UU (for M8)
-* **Smooth Rods:** 10mm Precision Ground (don't buy 8mm if buying new)
+* **Bearings:** 12× LM8UU (for 8mm rods)
+* **Smooth Rods:** 8mm Precision Ground, scavenged from two donors
 
 ### Brain Essentials
 * **Controller:** MKS SKIPR (~$85)

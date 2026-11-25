@@ -84,13 +84,24 @@ The Anet A8 was one of the most popular budget 3D printers ever sold, with milli
 For 220×220mm build volume with Dual-8 rods:
 
 ```
-X-rod span = BUILD_X + CARRIAGE_OVERHANG + CLEARANCE
-          = 220 + 80 + 30 = 330mm
+X-rod span = BUILD_X + MOTOR_CLEARANCE
+          = 220 + 60 = 280mm
+
+  (frame_sizing.py computes x_span = bed_x + CLEARANCES["x_motor"],
+   where x_motor = 60mm. Verify with: python scripts/analyze.py --quick)
 
 Deflection analysis (from ADR-021):
-- Dual 8mm at 330mm span, 280g toolhead: 0.026mm (GOOD)
+- Dual 8mm at 280mm span, 280g toolhead: 0.0156mm (GOOD)
+- Recommended accel: 4138 mm/s²
 - Well within acceptable tolerance
 ```
+
+> **Note:** an earlier revision of this ADR assumed a 330mm X span
+> (220 + 80 carriage overhang + 30 clearance). The analysis tool derives
+> 280mm from the frame sizing constants. The 330mm figure was more
+> conservative; at that span dual-8 gives 0.0256mm, which lands at the
+> edge of the quality threshold. Re-run the analysis tool if the frame
+> layout changes the span.
 
 220mm build volume is comfortably within Dual-8 capability without pushing limits.
 

@@ -23,6 +23,7 @@ from analysis.rod_sag import (
     calculate_rod_sag,
     compare_rod_options,
     get_extruder_mass,
+    rods_for_config,
     EXTRUDER_MASSES,
 )
 from analysis.frame_sizing import (
@@ -112,10 +113,18 @@ def run_interactive():
     print_section("Rod Configuration")
     smooth_rod = get_input(
         "Smooth rod diameter (mm)",
-        default="10",
+        default="8",
         valid_options=["8", "10", "12"],
     )
     smooth_rod = float(smooth_rod)
+
+    # Rod count per ADR-021 (dual 8mm vertical stacking is the reference)
+    rod_config = get_input(
+        "Rod configuration",
+        default="DUAL_VERTICAL",
+        valid_options=["DUAL_VERTICAL", "SINGLE"],
+    )
+    rod_count = rods_for_config(rod_config)
 
     # Get extruder type
     print_section("Extruder Selection")
@@ -159,9 +168,11 @@ def run_interactive():
         rod_diameter=smooth_rod,
         span=frame.x_span,
         toolhead_mass=toolhead_mass,
+        rod_count=rod_count,
     )
 
-    print(f"\nConfiguration: M{int(smooth_rod)} rods, {frame.x_span:.0f}mm span, {toolhead_mass}g toolhead")
+    rod_desc = f"{rod_count}x M{int(smooth_rod)}" if rod_count > 1 else f"M{int(smooth_rod)}"
+    print(f"\nConfiguration: {rod_desc} rods, {frame.x_span:.0f}mm span, {toolhead_mass}g toolhead")
     print(f"\nDeflection: {sag.deflection:.4f}mm")
     print(f"Verdict: {sag.verdict.upper()}")
     print(f"\n{sag.recommendation}")
@@ -169,11 +180,14 @@ def run_interactive():
     # Compare rod options
     if smooth_rod == 8.0 and sag.verdict in ["marginal", "excessive"]:
         print_section("Rod Comparison")
-        comparison = compare_rod_options(frame.x_span, toolhead_mass)
+        comparison = compare_rod_options(
+            frame.x_span, toolhead_mass, rod_count=rod_count
+        )
         print(f"\nAt {frame.x_span:.0f}mm span with {toolhead_mass}g toolhead:")
         for r in comparison:
             status = "✓" if r.verdict in ["excellent", "good", "acceptable"] else "✗"
-            print(f"  M{int(r.rod_diameter)}: {r.deflection:.4f}mm - {r.verdict} {status}")
+            r_desc = f"{r.rod_count}x M{int(r.rod_diameter)}" if r.rod_count > 1 else f"M{int(r.rod_diameter)}"
+            print(f"  {r_desc}: {r.deflection:.4f}mm - {r.verdict} {status}")
 
     # Calculate acceleration limits
     print_header("Acceleration Analysis")
@@ -181,6 +195,7 @@ def run_interactive():
         toolhead_mass=toolhead_mass,
         rod_diameter=smooth_rod,
         span=frame.x_span,
+        rod_count=rod_count,
     )
 
     print(f"\nAcceleration limits:")
@@ -228,22 +243,44 @@ def run_quick():
     """Run quick analysis with reference spec defaults."""
     print_header("Amalgam Quick Analysis (Reference Spec)")
 
-    # Reference spec: 235x235 bed, Pitan, M10 rods
-    bed_x, bed_y = 235, 235
-    build_z = 250
-    smooth_rod = 10.0
+    # Reference spec per ADR-021 (dual 8mm) and ADR-024 (220x220 bed)
+    bed_x, bed_y = 220, 220
+    build_z = 220
+    smooth_rod = 8.0
+    rod_config = "DUAL_VERTICAL"
+    rod_count = rods_for_config(rod_config)
     extruder = "PITAN"
     toolhead_mass = get_extruder_mass(extruder)
 
     frame = calculate_frame_size(bed_x, bed_y, build_z, extruder)
-    sag = calculate_rod_sag(smooth_rod, frame.x_span, toolhead_mass)
-    accel = calculate_max_acceleration(toolhead_mass, smooth_rod, frame.x_span)
+    sag = calculate_rod_sag(
+        smooth_rod, frame.x_span, toolhead_mass, rod_count=rod_count
+    )
+    accel = calculate_max_acceleration(
+        toolhead_mass, smooth_rod, frame.x_span, rod_count=rod_count
+    )
+
+    # Derive the verdict from the computed numbers rather than asserting it
+    if sag.verdict in ["excellent", "good"] and accel.recommended_accel >= 2500:
+        verdict_line = "Reference spec is well-engineered. ✓"
+    elif sag.verdict == "acceptable" and accel.recommended_accel >= 1500:
+        verdict_line = "Reference spec is acceptable, with caveats. ~"
+    elif sag.verdict == "marginal":
+        verdict_line = "Reference spec is marginal - see notes. ⚠"
+    else:
+        verdict_line = "Reference spec needs review. ✗"
+
+    rod_desc = (
+        f"{rod_count}x M{int(smooth_rod)}"
+        if rod_count > 1
+        else f"M{int(smooth_rod)}"
+    )
 
     print(f"""
 Configuration:
   Bed: {bed_x}x{bed_y}mm
   Build height: {build_z}mm
-  Smooth rods: M{int(smooth_rod)}
+  Smooth rods: {rod_desc} ({rod_config})
   Extruder: {extruder} ({toolhead_mass}g)
 
 Results:
@@ -253,8 +290,14 @@ Results:
   Max accel: {accel.recommended_accel:.0f} mm/s²
   Velocity: {accel.recommended_velocity}-{accel.max_velocity} mm/s
 
-Verdict: Reference spec is well-engineered. ✓
+Verdict: {verdict_line}
 """)
+
+    if accel.notes:
+        print("Notes:")
+        for note in accel.notes:
+            print(f"  • {note}")
+        print()
 
 
 def main():

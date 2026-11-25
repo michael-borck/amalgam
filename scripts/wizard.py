@@ -35,6 +35,7 @@ from registry import (
     Severity,
 )
 from registry.motors import get_motor_count_for_tier
+from analysis.rod_sag import rods_for_config
 
 
 # =============================================================================
@@ -189,6 +190,10 @@ class PartsInventory:
     # Build height
     build_z: int
 
+    # Motion rod mounting (ADR-021): "DUAL_VERTICAL" is the reference,
+    # "SINGLE" uses one rod per axis.
+    smooth_rod_config: str = "DUAL_VERTICAL"
+
     # Export settings
     export_format: str = "stl"  # stl, step, 3mf, brep, gltf, all
     export_drawings: bool = False
@@ -290,12 +295,12 @@ def collect_inventory() -> PartsInventory:
     bed_choice = select_from_list(
         "Select bed source:",
         {**COMMON_BED_SIZES, "other": (0, 0, "Other/Custom")},
-        default="ender3",
+        default="anet_a8",
     )
 
     if bed_choice == "other" or bed_choice == "custom":
-        bed_x = int(get_number("Bed X dimension (mm)", default=235, min_val=100, max_val=500))
-        bed_y = int(get_number("Bed Y dimension (mm)", default=235, min_val=100, max_val=500))
+        bed_x = int(get_number("Bed X dimension (mm)", default=220, min_val=100, max_val=500))
+        bed_y = int(get_number("Bed Y dimension (mm)", default=220, min_val=100, max_val=500))
         bed_id = "CUSTOM"
     else:
         bed_x, bed_y, _ = COMMON_BED_SIZES[bed_choice]
@@ -311,21 +316,27 @@ def collect_inventory() -> PartsInventory:
     print(f"  → Bed size: {bed_x}x{bed_y}mm")
 
     # Build height
-    build_z = int(get_number("Build height Z (mm)", default=250, min_val=100, max_val=500))
+    build_z = int(get_number("Build height Z (mm)", default=220, min_val=100, max_val=500))
 
     # --- Rods ---
     print_section("Smooth Rods")
     print("What diameter smooth rods will you use?")
-    print("  8mm:  Minimum viable, limited with heavy toolheads")
-    print("  10mm: REFERENCE SPEC - good balance")
+    print("  8mm:  REFERENCE SPEC (ADR-021) - dual-rod mounting shares the load")
+    print("  10mm: Good balance, also scavengeable as a pair")
     print("  12mm: Maximum rigidity, harder to source")
 
     smooth_rod = get_input(
         "Smooth rod diameter (mm)",
-        default="10",
+        default="8",
         valid_options=["8", "10", "12"],
     )
     smooth_rod_diameter = float(smooth_rod)
+
+    rod_config = get_input(
+        "Rod mounting",
+        default="DUAL_VERTICAL",
+        valid_options=["DUAL_VERTICAL", "SINGLE"],
+    )
 
     # --- Extruder ---
     print_section("Extruder")
@@ -376,6 +387,7 @@ def collect_inventory() -> PartsInventory:
         bed_y=bed_y,
         smooth_rod_diameter=smooth_rod_diameter,
         threaded_rod_type="M10",
+        smooth_rod_config=rod_config,
         extruder_id=extruder_id,
         build_z=build_z,
         export_format=export_format,
@@ -427,6 +439,7 @@ def analyze_tier(inventory: PartsInventory) -> tuple[int, list]:
         rod_diameter=inventory.smooth_rod_diameter,
         bed_size_x=inventory.bed_x,
         bed_size_y=inventory.bed_y,
+        rod_config=inventory.smooth_rod_config,
     )
 
     # Add tier-specific issues
@@ -491,9 +504,21 @@ M10_NOMINAL_DIA = 10.0
 LUMPY_FACTOR = 0.5  # Tolerance for rod variation (0.2 zinc, 0.5+ galvanized)
 M10_FIT_DIA = M10_NOMINAL_DIA + LUMPY_FACTOR
 
+# Corner bracket geometry (Scaffold path, ADR-001 / ADR-025)
+CORNER_SIZE = 50.0              # Corner cube edge length (mm)
+WALL_THICKNESS = 5.0            # Material thickness at rod seats (mm)
+JAM_NUT_ACCESS_DIA = 20.0       # Counterbore diameter for jam nuts (mm)
+CORNER_ANCHORING_BOTTOM = "THROUGH_BORE"  # Strongest: bed weight + Z thrust
+CORNER_ANCHORING_TOP = "JAM_NUT"         # Light load, flush finish
+
+# MDF base and squaring jig (ADR-011)
+MDF_BASE_THICKNESS = 18.0       # Standard MDF sheet thickness (mm)
+JIG_UPRIGHT_HEIGHT = 120.0      # Squaring jig upright height (mm)
+
 # Smooth rods (linear motion)
 SMOOTH_ROD_DIA = {inventory.smooth_rod_diameter}
 SMOOTH_ROD_FIT = SMOOTH_ROD_DIA + 0.1  # Tight fit for linear bearings
+SMOOTH_ROD_CONFIG = "{inventory.smooth_rod_config}"  # "DUAL_VERTICAL" (ADR-021 reference) or "SINGLE"
 
 # =============================================================================
 # 3. BED CONFIGURATION
@@ -626,14 +651,22 @@ def run_analysis(inventory: PartsInventory):
     print(f"  Y axis: {frame.y_span:.0f}mm")
 
     # Rod sag
+    rod_count = rods_for_config(inventory.smooth_rod_config)
     sag = calculate_rod_sag(
         rod_diameter=inventory.smooth_rod_diameter,
         span=frame.x_span,
         toolhead_mass=extruder.mass_grams,
+        rod_count=rod_count,
+    )
+
+    rod_desc = (
+        f"{rod_count}x M{int(inventory.smooth_rod_diameter)}"
+        if rod_count > 1
+        else f"M{int(inventory.smooth_rod_diameter)}"
     )
 
     print(f"\nRod Sag Analysis:")
-    print(f"  Config: M{int(inventory.smooth_rod_diameter)} rods, {frame.x_span:.0f}mm span, {extruder.mass_grams}g toolhead")
+    print(f"  Config: {rod_desc} rods ({inventory.smooth_rod_config}), {frame.x_span:.0f}mm span, {extruder.mass_grams}g toolhead")
     print(f"  Deflection: {sag.deflection:.4f}mm")
     print(f"  Verdict: {sag.verdict.upper()}")
 
@@ -642,6 +675,7 @@ def run_analysis(inventory: PartsInventory):
         toolhead_mass=extruder.mass_grams,
         rod_diameter=inventory.smooth_rod_diameter,
         span=frame.x_span,
+        rod_count=rod_count,
     )
 
     print(f"\nAcceleration Limits:")
@@ -679,13 +713,14 @@ def run_wizard(quick: bool = False, force_tier: int = None, auto_save: bool = Fa
             extruder_motor_type="standard",
             board_ids=["MKS_SKIPR"],
             has_separate_host=False,
-            bed_id="ENDER3_BED",
-            bed_x=235,
-            bed_y=235,
-            smooth_rod_diameter=10.0,
+            bed_id="ANET_A8_BED",
+            bed_x=220,
+            bed_y=220,
+            smooth_rod_diameter=8.0,
             threaded_rod_type="M10",
+            smooth_rod_config="DUAL_VERTICAL",
             extruder_id="PITAN",
-            build_z=250,
+            build_z=220,
             export_format="stl",
             export_drawings=False,
         )
@@ -712,7 +747,13 @@ def run_wizard(quick: bool = False, force_tier: int = None, auto_save: bool = Fa
     print(f"  Tier: {tier} ({get_tier_requirements(tier).name})")
     print(f"  Bed: {inventory.bed_x}x{inventory.bed_y}mm")
     print(f"  Build height: {inventory.build_z}mm")
-    print(f"  Smooth rods: M{int(inventory.smooth_rod_diameter)}")
+    summary_rod_count = rods_for_config(inventory.smooth_rod_config)
+    summary_rod_desc = (
+        f"{summary_rod_count}x M{int(inventory.smooth_rod_diameter)}"
+        if summary_rod_count > 1
+        else f"M{int(inventory.smooth_rod_diameter)}"
+    )
+    print(f"  Smooth rods: {summary_rod_desc} ({inventory.smooth_rod_config})")
     print(f"  Extruder: {inventory.extruder_id}")
     print(f"  Board(s): {', '.join(inventory.board_ids)}")
     print(f"  Export format: {inventory.export_format}")

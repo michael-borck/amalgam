@@ -26,15 +26,50 @@ When two parallel rods share the load equally:
 - Each rod carries F/2
 - Deflection: `δ_dual = (F/2) × L³ / (48 × E × I) = δ_single / 2`
 
-**Dual 8mm rods achieve LESS deflection than single 10mm rods:**
-
 | Configuration | Deflection @ 360mm, 280g | Verdict |
 |---------------|--------------------------|---------|
 | Single 8mm | 0.066mm | Excessive |
 | Single 10mm | 0.027mm | Acceptable |
 | **Dual 8mm** | **0.033mm** | **Acceptable** |
 
-While dual 8mm has ~82% the stiffness of single 10mm, the load sharing more than compensates—resulting in better deflection performance.
+**Dual 8mm deflects MORE than a single 10mm, not less.** An earlier revision of
+this ADR claimed the opposite. That was wrong, and the error mattered: stiffness
+scales with the fourth power of diameter, so the comparison is:
+
+```
+dual-8    = 2 × 8⁴  =  8192   (arbitrary stiffness units)
+single-10 = 1 × 10⁴ = 10000
+ratio     = 8192 / 10000 = 0.819
+```
+
+Dual-8 is **81.9% as stiff** as single-10, which means it deflects **~22% more**
+(0.033mm vs 0.027mm above). Lower stiffness produces more deflection, so the load
+sharing does *not* "more than compensate" — it compensates for going down from
+10mm to 8mm, and no more.
+
+Because the ratio `2 × 8⁴ / 10⁴` is constant, **no span makes dual-8 stiffer than
+single-10**. The comparison is span-independent; only the absolute magnitudes move.
+
+The numbers in the table were always correct. The prose contradicted them.
+
+### What Actually Justifies Dual-8
+
+At Amalgam's reference bed (220×220mm, 280mm span, 280g Pitan):
+
+| Configuration | Deflection | Verdict | Rod cost |
+|---------------|-----------|---------|----------|
+| Dual 8mm | 0.0156mm | Good | $0 (scavenged) |
+| Single 10mm | 0.0128mm | Excellent | ~$60-80 AUD (purchased) |
+
+Both configurations sit comfortably inside the 0.025mm quality threshold. The
+22% difference is immaterial at the reference bed, and **the rods are free**.
+
+Dual-8 is therefore the correct choice on cost, not on stiffness. The case breaks
+down at larger spans, where the two configurations diverge toward the threshold:
+at a 330mm span dual-8 reaches 0.0256mm (acceptable, at the threshold edge) while
+single-10 stays at 0.0209mm (good). **Builders exceeding 220mm should treat this
+as a real trade-off
+rather than a free upgrade** — either buy M10, or shorten the span.
 
 ### The Scavengeability Argument
 
@@ -47,13 +82,19 @@ Given two donors are required anyway:
 - Two Prusa clones provide 12× 8mm smooth rods
 - M10 smooth rods are rarely scavengeable
 - Buying M10 adds $60-80 AUD to build cost
-- Dual 8mm achieves equal or better performance at zero rod cost
+- At the reference bed both configurations are within tolerance, so the free
+  option wins on cost
 
-**The scavenger path became the optimal path.**
+**The scavenger path became the optimal path — on cost, not stiffness.**
 
 ## Decision
 
 We adopt **Dual 8mm Smooth Rods with Vertical Stacking** as the Amalgam reference specification for XY motion.
+
+This is chosen for **scavengeability and cost**, not for stiffness. Dual 8mm is
+81.9% as stiff as a single 10mm rod (see above) and deflects ~22% more; at the
+220mm reference bed both are within tolerance, and the 8mm rods are free from
+two donors while M10 must be purchased.
 
 ### Reference Configuration
 
@@ -121,7 +162,8 @@ See **ADR-022: Linear Bearing Selection** for detailed bearing rationale, scaven
 
 1. **True scavengeability**: All smooth rods from 2 donor printers
 2. **Cost reduction**: Eliminates $60-80 AUD rod purchase
-3. **Equal or better stiffness**: Dual 8mm outperforms single 10mm on deflection
+3. **Adequate stiffness**: At the 220mm reference bed, dual 8mm deflects
+   0.0156mm vs single-10's 0.0128mm — both within the 0.025mm quality threshold
 4. **Proven design**: Vertical stacking validated by Voron Legacy
 5. **Parts availability**: 8mm rods/bearings are ubiquitous
 6. **Aligned with triple-Z**: Already need 2 donors for motors
@@ -132,6 +174,10 @@ See **ADR-022: Linear Bearing Selection** for detailed bearing rationale, scaven
 2. **Redesigned brackets**: X-ends and Y-pucks need dual-rod mounts
 3. **Toolhead mass budget**: Keep under 280g for optimal performance
 4. **Slightly more complex assembly**: More rods to align
+5. **~22% more deflection than single 10mm**: Dual 8mm is 81.9% as stiff as
+   single-10 (2 × 8⁴ / 10⁴). Immaterial at the 220mm reference bed, but the gap
+   widens with span — at 330mm dual-8 hits 0.0256mm vs single-10's 0.0209mm.
+   Beyond 220mm beds, buy M10 or shorten the span.
 
 ### What This Enables
 
@@ -214,13 +260,16 @@ Based on layer height and quality requirements:
 | < 0.050mm | Marginal | Draft quality |
 | > 0.050mm | Excessive | Not recommended |
 
+These are implemented as the thresholds in `scripts/analysis/rod_sag.py` and are
+covered by `scripts/tests/test_rod_sag.py`.
+
 ### Toolhead Mass Budget
 
 For acceptable deflection (< 0.035mm) at 360mm span with dual 8mm:
 
 | Toolhead | Mass | Deflection | Verdict |
 |----------|------|------------|---------|
-| Pitan + pancake NEMA17 | ~220g | 0.025mm | Good |
+| Pitan + pancake NEMA17 | ~220g | 0.026mm | Acceptable |
 | Pitan + standard NEMA17 | ~280g | 0.033mm | Acceptable |
 | Wade + standard NEMA17 | ~400g | 0.047mm | Marginal |
 
@@ -228,14 +277,14 @@ For acceptable deflection (< 0.035mm) at 360mm span with dual 8mm:
 
 ### Span Calculations
 
-For 220mm build volume (reference spec, see ADR-024):
+For 220mm build volume (reference spec, see ADR-024), the analysis tool derives
+the X span from the frame sizing constants:
 ```
-X-rod length = BUILD_X + (2 × CARRIAGE_OVERHANG) + CLEARANCE
-            = 220 + 80 + 30 = 330mm
+X-span = BUILD_X + MOTOR_CLEARANCE = 220 + 60 = 280mm
+```
 
-Y-rod length = BUILD_Y + GANTRY_DEPTH + CLEARANCE
-            = 220 + 80 + 30 = 330mm
-```
+At this span with a 280g Pitan on dual 8mm, deflection is 0.0156mm (good). See
+ADR-024 for the note on an earlier revision that assumed a 330mm span.
 
 ### CAD Parameters
 

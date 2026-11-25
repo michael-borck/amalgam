@@ -172,6 +172,7 @@ COMMON_BEDS = {
 def suggest_bed_for_rods(
     rod_diameter: float,
     max_acceptable_sag: float = 0.035,
+    rod_count: int = 1,
 ) -> list[tuple[str, float, float, str]]:
     """
     Suggest appropriate bed sizes for a given rod diameter.
@@ -179,11 +180,19 @@ def suggest_bed_for_rods(
     Args:
         rod_diameter: Smooth rod diameter in mm
         max_acceptable_sag: Maximum acceptable deflection in mm
+        rod_count: Number of parallel rods sharing the load (ADR-021)
 
     Returns:
         List of (bed_name, x, y, description) tuples that work with this rod
     """
-    from .rod_sag import calculate_rod_sag, get_extruder_mass
+    if __package__:
+        from .rod_sag import calculate_rod_sag, get_extruder_mass
+    else:  # running as a script (python scripts/analysis/frame_sizing.py)
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+        from analysis.rod_sag import calculate_rod_sag, get_extruder_mass
 
     suitable = []
     pitan_mass = get_extruder_mass("PITAN")
@@ -193,7 +202,9 @@ def suggest_bed_for_rods(
         frame = calculate_frame_size(x, y, 250)
 
         # Check rod sag at this span
-        sag = calculate_rod_sag(rod_diameter, frame.x_span, pitan_mass)
+        sag = calculate_rod_sag(
+            rod_diameter, frame.x_span, pitan_mass, rod_count=rod_count
+        )
 
         if sag.deflection <= max_acceptable_sag:
             suitable.append((name, x, y, desc))

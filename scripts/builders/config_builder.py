@@ -45,6 +45,10 @@ class BuildConfig:
     z_configuration: str  # "triple" or "belt"
     has_canbus: bool
 
+    # Motion rod mounting (ADR-021): "DUAL_VERTICAL" is the reference,
+    # "SINGLE" uses one rod per axis.
+    smooth_rod_config: str = "DUAL_VERTICAL"
+
 
 def generate_config(config: BuildConfig) -> str:
     """
@@ -87,9 +91,21 @@ M10_NOMINAL_DIA = 10.0
 LUMPY_FACTOR = 0.5  # Tolerance for rod variation (0.2 zinc, 0.5+ galvanized)
 M10_FIT_DIA = M10_NOMINAL_DIA + LUMPY_FACTOR
 
+# Corner bracket geometry (Scaffold path, ADR-001 / ADR-025)
+CORNER_SIZE = 50.0              # Corner cube edge length (mm)
+WALL_THICKNESS = 5.0            # Material thickness at rod seats (mm)
+JAM_NUT_ACCESS_DIA = 20.0       # Counterbore diameter for jam nuts (mm)
+CORNER_ANCHORING_BOTTOM = "THROUGH_BORE"  # Strongest: bed weight + Z thrust
+CORNER_ANCHORING_TOP = "JAM_NUT"         # Light load, flush finish
+
+# MDF base and squaring jig (ADR-011)
+MDF_BASE_THICKNESS = 18.0       # Standard MDF sheet thickness (mm)
+JIG_UPRIGHT_HEIGHT = 120.0      # Squaring jig upright height (mm)
+
 # Smooth rods (linear motion)
 SMOOTH_ROD_DIA = {config.smooth_rod_diameter}
 SMOOTH_ROD_FIT = SMOOTH_ROD_DIA + 0.1  # Tight fit for linear bearings
+SMOOTH_ROD_CONFIG = "{config.smooth_rod_config}"  # "DUAL_VERTICAL" (ADR-021 reference) or "SINGLE"
 
 # =============================================================================
 # 3. BED CONFIGURATION

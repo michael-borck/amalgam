@@ -26,7 +26,11 @@ from copy import deepcopy
 scripts_path = Path(__file__).parent
 sys.path.insert(0, str(scripts_path))
 
-from analysis.rod_sag import calculate_rod_sag, RodSagResult
+from analysis.rod_sag import (
+    calculate_rod_sag,
+    rods_for_config,
+    RodSagResult,
+)
 from analysis.frame_sizing import calculate_frame_size, FrameSizeResult
 from analysis.acceleration import calculate_max_acceleration, AccelerationResult
 from registry import EXTRUDERS, get_extruder
@@ -46,11 +50,17 @@ class ConfigSnapshot:
     smooth_rod_dia: float
     extruder_type: str
     extruder_mass: int
+    rod_config: str = "DUAL_VERTICAL"  # ADR-021
 
     # Calculated results (filled by analyze)
     frame: Optional[FrameSizeResult] = None
     sag: Optional[RodSagResult] = None
     accel: Optional[AccelerationResult] = None
+
+    @property
+    def rod_count(self) -> int:
+        """Number of parallel rods sharing the load."""
+        return rods_for_config(self.rod_config)
 
 
 def load_current_config() -> ConfigSnapshot:
@@ -61,10 +71,10 @@ def load_current_config() -> ConfigSnapshot:
     # Defaults if no config
     defaults = ConfigSnapshot(
         name="Current",
-        bed_x=235,
-        bed_y=235,
-        build_z=250,
-        smooth_rod_dia=10.0,
+        bed_x=220,
+        bed_y=220,
+        build_z=220,
+        smooth_rod_dia=8.0,
         extruder_type="PITAN",
         extruder_mass=280,
     )
@@ -82,12 +92,13 @@ def load_current_config() -> ConfigSnapshot:
 
         return ConfigSnapshot(
             name="Current",
-            bed_x=config_globals.get("BED_SIZE_X", build_volume.get("x", 235)),
-            bed_y=config_globals.get("BED_SIZE_Y", build_volume.get("y", 235)),
-            build_z=build_volume.get("z", config_globals.get("BUILD_Z", 250)),
-            smooth_rod_dia=config_globals.get("SMOOTH_ROD_DIA", 10.0),
+            bed_x=config_globals.get("BED_SIZE_X", build_volume.get("x", 220)),
+            bed_y=config_globals.get("BED_SIZE_Y", build_volume.get("y", 220)),
+            build_z=build_volume.get("z", config_globals.get("BUILD_Z", 220)),
+            smooth_rod_dia=config_globals.get("SMOOTH_ROD_DIA", 8.0),
             extruder_type=config_globals.get("EXTRUDER_TYPE", "PITAN"),
             extruder_mass=config_globals.get("EXTRUDER_MASS", 280),
+            rod_config=config_globals.get("SMOOTH_ROD_CONFIG", "DUAL_VERTICAL"),
         )
     except Exception as e:
         print(f"  Warning: Could not load config.py: {e}")
@@ -107,12 +118,14 @@ def analyze_config(config: ConfigSnapshot) -> ConfigSnapshot:
         rod_diameter=config.smooth_rod_dia,
         span=config.frame.x_span,
         toolhead_mass=config.extruder_mass,
+        rod_count=config.rod_count,
     )
 
     config.accel = calculate_max_acceleration(
         toolhead_mass=config.extruder_mass,
         rod_diameter=config.smooth_rod_dia,
         span=config.frame.x_span,
+        rod_count=config.rod_count,
     )
 
     return config
@@ -128,6 +141,13 @@ def print_header(title: str):
     print(f"\n{'=' * width}")
     print(f" {title}")
     print(f"{'=' * width}")
+
+
+def rod_label(snap: ConfigSnapshot) -> str:
+    """Human-readable rod description including count."""
+    if snap.rod_count > 1:
+        return f"{snap.rod_count}x M{int(snap.smooth_rod_dia)}"
+    return f"M{int(snap.smooth_rod_dia)}"
 
 
 def print_comparison(original: ConfigSnapshot, modified: ConfigSnapshot):
@@ -156,7 +176,8 @@ def print_comparison(original: ConfigSnapshot, modified: ConfigSnapshot):
     show_param("Bed X", original.bed_x, modified.bed_x, "mm")
     show_param("Bed Y", original.bed_y, modified.bed_y, "mm")
     show_param("Build Z", original.build_z, modified.build_z, "mm")
-    show_param("Smooth Rods", f"M{int(original.smooth_rod_dia)}", f"M{int(modified.smooth_rod_dia)}")
+    show_param("Smooth Rods", rod_label(original), rod_label(modified))
+    show_param("Rod Config", original.rod_config, modified.rod_config)
     show_param("Extruder", original.extruder_type, modified.extruder_type)
     show_param("Toolhead Mass", original.extruder_mass, modified.extruder_mass, "g")
 
@@ -268,7 +289,8 @@ def print_multi_comparison(configs: list[ConfigSnapshot]):
         print(f"  {label:<25}" + "".join(f"{v:<15}" for v in values))
 
     row("Bed Size", [f"{c.bed_x}x{c.bed_y}" for c in configs])
-    row("Smooth Rods", [f"M{int(c.smooth_rod_dia)}" for c in configs])
+    row("Smooth Rods", [rod_label(c) for c in configs])
+    row("Rod Config", [c.rod_config for c in configs])
     row("Extruder", [c.extruder_type for c in configs])
     row("X Span (mm)", [f"{c.frame.x_span:.0f}" for c in configs])
     row("Deflection (mm)", [f"{c.sag.deflection:.4f}" for c in configs])
@@ -300,6 +322,7 @@ def whatif_rods(current: ConfigSnapshot, new_diameter: float) -> ConfigSnapshot:
         smooth_rod_dia=new_diameter,
         extruder_type=current.extruder_type,
         extruder_mass=current.extruder_mass,
+        rod_config=current.rod_config,
     )
     return print_comparison(current, modified)
 
@@ -314,6 +337,7 @@ def whatif_bed(current: ConfigSnapshot, new_x: int, new_y: int) -> ConfigSnapsho
         smooth_rod_dia=current.smooth_rod_dia,
         extruder_type=current.extruder_type,
         extruder_mass=current.extruder_mass,
+        rod_config=current.rod_config,
     )
     return print_comparison(current, modified)
 
@@ -334,6 +358,7 @@ def whatif_extruder(current: ConfigSnapshot, new_extruder: str) -> ConfigSnapsho
         smooth_rod_dia=current.smooth_rod_dia,
         extruder_type=new_extruder,
         extruder_mass=ext.mass_grams,
+        rod_config=current.rod_config,
     )
     return print_comparison(current, modified)
 
@@ -369,6 +394,7 @@ def compare_all_extruders(current: ConfigSnapshot):
             smooth_rod_dia=current.smooth_rod_dia,
             extruder_type=ext_id,
             extruder_mass=ext.mass_grams,
+            rod_config=current.rod_config,
         )
         analyze_config(config)
         configs.append(config)
@@ -489,7 +515,7 @@ def run_interactive():
 
     print(f"\nCurrent configuration:")
     print(f"  Bed: {current.bed_x}x{current.bed_y}mm")
-    print(f"  Smooth rods: M{int(current.smooth_rod_dia)}")
+    print(f"  Smooth rods: {rod_label(current)} ({current.rod_config})")
     print(f"  Extruder: {current.extruder_type} ({current.extruder_mass}g)")
     print(f"  Rod deflection: {current.sag.deflection:.4f}mm ({current.sag.verdict})")
     print(f"  Max accel: {current.accel.recommended_accel:.0f} mm/s²")

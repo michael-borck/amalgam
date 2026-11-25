@@ -32,7 +32,9 @@ When two parallel rods share the load:
 - Each rod carries F/2
 - Deflection halves: `δ_dual = δ_single / 2`
 
-This means **dual 8mm rods can match or exceed single 10mm performance**.
+This means **dual 8mm rods halve the deflection of single 8mm**, bringing 8mm
+rods into acceptable range. It does *not* mean dual 8mm beats single 10mm — that
+was claimed in an earlier revision of this ADR and was incorrect. See ADR-021.
 
 ## Decision
 We define a **"Dual-8 Scavenger"** variant that uses dual 8mm smooth rods per axis with vertically-stacked configuration, enabling full 235mm build volume with scavenged parts from two donor printers.
@@ -73,8 +75,10 @@ Second moment of area (I = π×d⁴/64):
   Dual 8mm:    I_eff = 402 mm⁴ (load shared)
   Single 10mm: I = 491 mm⁴
 
-Effective stiffness ratio: Dual 8mm / Single 10mm = 0.82
-With load sharing: Dual 8mm deflection < Single 10mm deflection
+Effective stiffness ratio: Dual 8mm / Single 10mm = 402 / 491 = 0.82
+
+=> Dual 8mm is 82% as stiff as single 10mm, so it deflects ~22% MORE.
+   (An earlier revision of this ADR inverted this conclusion; see ADR-021.)
 ```
 
 ### Why Vertical Stacking?

@@ -3,7 +3,7 @@
 ## Status
 Superseded by [ADR-021: Dual-Rod Motion System](021-dual-rod-motion-system.md)
 
-> **Note**: This ADR established M10 single-rod as the reference specification. Subsequent analysis (ADR-020, ADR-021) demonstrated that dual 8mm rods with shared load achieve equal or better deflection performance while being fully scavengeable from donor printers. ADR-021 now defines the reference specification.
+> **Note**: This ADR established M10 single-rod as the reference specification. Subsequent analysis (ADR-020, ADR-021) showed that dual 8mm rods with shared load deflect ~22% more than single 10mm, but stay within tolerance at the 220mm reference bed while being fully scavengeable from donor printers. ADR-021 adopts dual 8mm on those cost grounds.
 
 ## Original Status
 Accepted
