@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analysis:
+    name: Analysis tests + CLI smoke checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pytest
+        run: python -m pip install --upgrade pip pytest
+
+      # The analysis package is stdlib-only, so no build123d/CAD install here.
+      # Those are exercised separately in the CAD job below.
+      - name: Run analysis tests
+        run: python -m pytest scripts/tests/ -v
+
+      # Cheap guard against the relative-import regression in the __main__
+      # demo blocks, which pytest also covers but this fails fast and loudly.
+      # __init__.py is excluded: it has no __main__ block and is only ever
+      # imported as a package, so running it directly is expected to fail.
+      - name: Analysis modules run standalone
+        run: |
+          for module in scripts/analysis/*.py; do
+            case "$module" in *__init__.py) continue ;; esac
+            echo "--- $module"
+            python "$module" > /dev/null
+          done
+
+      - name: Compile-check all scripts
+        run: python -m compileall -q scripts/
+
+  cad:
+    name: CAD package + geometry verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # build123d pulls OpenCascade, so this is the slow job. It is separate so
+      # a CAD dependency bump doesn't block the fast analysis tests above.
+      - name: Install CAD dependencies
+        run: |
+          python -m pip install --upgrade pip pytest build123d numpy
+
+      - name: Import the amalgam package
+        run: |
+          cd cad
+          python -c "import amalgam; print('amalgam package imports OK')"
+
+      - name: Generate frame and motion parts
+        run: |
+          cd cad
+          cp config.py.example config.py
+          PYTHONPATH=. python amalgam/parts/frame/corner_standard.py
+          PYTHONPATH=. python amalgam/parts/frame/squaring_jig.py
+          PYTHONPATH=. python amalgam/parts/motion/x_axis.py
+
+      # The export-integrity tests read the generated STLs, so they must run
+      # after generation.
+      - name: Verify geometry and STL export integrity
+        run: |
+          cd cad
+          python -m pytest tests/ -v
+
+      - name: Verify all expected STLs exist
+        run: |
+          cd cad
+          missing=0
+          for f in corner_standard_bottom corner_standard_top squaring_jig \
+                   x_gantry_beam x_carriage x_end_plate; do
+            path="exports/stl/$f.stl"
+            if [ ! -s "$path" ]; then
+              echo "MISSING: $path"; missing=1
+            else
+              echo "ok: $path ($(wc -c < "$path") bytes)"
+            fi
+          done
+          exit $missing
+
+      - name: Verify example config is valid Python
+        run: python -m py_compile cad/config.py.example
