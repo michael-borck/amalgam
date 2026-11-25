@@ -97,7 +97,7 @@ website:
             href: articles/reconfiguration-of-3d-printing-market.md
     right:
       - icon: github
-        href: https://github.com/the80-20workshop/amalgam
+        href: https://github.com/michael-borck/amalgam
 
   sidebar:
     - title: "Guides"

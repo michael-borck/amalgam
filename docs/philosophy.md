@@ -2,7 +2,7 @@
 
 **20 Years of RepRap Wisdom, Distilled**
 
-This document captures the engineering philosophy behind Amalgam. For the specific hardware specification, see [../REFERENCE-SPEC.md](../REFERENCE-SPEC.md). For build instructions, see [../BUILDING.md](../BUILDING.md).
+This document captures the engineering philosophy behind Amalgam. For the specific hardware specification, see [REFERENCE-SPEC.md](https://github.com/michael-borck/amalgam/blob/main/REFERENCE-SPEC.md). For build instructions, see [BUILDING.md](https://github.com/michael-borck/amalgam/blob/main/BUILDING.md).
 
 ---
 
@@ -187,4 +187,4 @@ We use the **GNU General Public License v3**, the same license used by the origi
 
 ---
 
-*For the specific hardware specification, see [../REFERENCE-SPEC.md](../REFERENCE-SPEC.md).*
+*For the specific hardware specification, see [REFERENCE-SPEC.md](https://github.com/michael-borck/amalgam/blob/main/REFERENCE-SPEC.md).*

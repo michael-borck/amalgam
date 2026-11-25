@@ -29,8 +29,8 @@ A 3D printer that uses:
 | Document | Description |
 |----------|-------------|
 | [philosophy.md](philosophy.md) | The "Tractor" philosophy and 20 years of RepRap wisdom |
-| [../REFERENCE-SPEC.md](../REFERENCE-SPEC.md) | The specific hardware choices (Pitan, E3D V6, etc.) |
-| [../BUILDING.md](../BUILDING.md) | How to generate STL files from parametric CAD |
+| [REFERENCE-SPEC.md](https://github.com/michael-borck/amalgam/blob/main/REFERENCE-SPEC.md) | The specific hardware choices (Pitan, E3D V6, etc.) |
+| [BUILDING.md](https://github.com/michael-borck/amalgam/blob/main/BUILDING.md) | How to generate STL files from parametric CAD |
 | [adr/](adr/) | Architecture Decision Records |
 | [guides/](guides/) | Build guides |
 | [deep-dives/](deep-dives/) | Design exploration documents |
@@ -63,7 +63,7 @@ Amalgam requires **two donor printers**. Pick your path based on what you scaven
 | **Z-System** | Triple-Z Independent | Auto-leveling via Klipper Z-tilt |
 | **Firmware** | Klipper | Input Shaping, Pressure Advance |
 
-See [../REFERENCE-SPEC.md](../REFERENCE-SPEC.md) for complete details.
+See [REFERENCE-SPEC.md](https://github.com/michael-borck/amalgam/blob/main/REFERENCE-SPEC.md) for complete details.
 
 ---
 
@@ -85,7 +85,7 @@ See [../REFERENCE-SPEC.md](../REFERENCE-SPEC.md) for complete details.
 ## Getting Started
 
 1. **Read the philosophy:** [philosophy.md](philosophy.md)
-2. **Understand the hardware:** [../REFERENCE-SPEC.md](../REFERENCE-SPEC.md)
+2. **Understand the hardware:** [REFERENCE-SPEC.md](https://github.com/michael-borck/amalgam/blob/main/REFERENCE-SPEC.md)
 3. **Get two donors:** Match donor types if possible (two rod-based or two V-slot)
 4. **Run the wizard:** `python scripts/wizard.py` — it recommends your frame path
 5. **Build it:** [guides/](guides/)
@@ -111,4 +111,4 @@ The Amalgam is released under **GNU GPL v3**, the same license as the original R
 ---
 
 *For the complete philosophy, see [philosophy.md](philosophy.md).*
-*For the hardware specification, see [../REFERENCE-SPEC.md](../REFERENCE-SPEC.md).*
+*For the hardware specification, see [REFERENCE-SPEC.md](https://github.com/michael-borck/amalgam/blob/main/REFERENCE-SPEC.md).*
