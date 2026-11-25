@@ -50,52 +50,64 @@ BUILD_VOLUME = {"X": 220, "Y": 220, "Z": 220}
 X_OVERHANG = 50.0 if EXTRUDER_TYPE == "WADE" else 35.0 if EXTRUDER_TYPE == "PITAN" else 25.0
 
 # --- 6.1 FRAME GEOMETRY (Amalgam M10 Frame) ---
-# Frame has 8 vertical rods (4 front, 4 back) with horizontal top/bottom rods
+# The frame is a box of 12 M10 rods: 4 corner uprights and 4 rods along each
+# of the bottom and top edges, joined by 8 printed corner brackets.
 
-# M12 SKELETON (Reduced height from 80 to 50 for efficiency)
-SKELETON_X = BUILD_VOLUME["X"] + (X_OVERHANG * 2) + 40
-SKELETON_Y = BUILD_VOLUME["Y"] + 120
-SKELETON_Z = BUILD_VOLUME["Z"] + 50  # Reduced from 80
+# FRAME SIZE. amalgam/lib/layout.py derives these from what has to fit: the
+# gantry's travel, the bed's travel and the stack of parts under the bed.
+# The values below suit the 220 x 220 x 220 reference build volume. If you
+# change BUILD_VOLUME, regenerate them with:
+#   cd cad && python -c "from amalgam.lib import layout as L; \
+#   print(L.builder_skeleton(L.LayoutConfig(bed_x=220, bed_y=220, build_z=220)))"
+#
+#   skeleton_x  distance between the left and right uprights
+#   skeleton_y  distance between the front and back uprights
+#   skeleton_z  distance between the bottom and top X rods
+#
+# cad/tests/test_layout.py checks these against the layout.
+SKELETON_X = 325  # left to right, between the uprights (mm)
+SKELETON_Y = 355  # front to back, between the uprights (mm)
+SKELETON_Z = 250  # bottom to top, between the X rods (mm)
 
 # Corner Design Parameters
 CORNER_SIZE = 50.0              # Size of corner cube (mm)
 WALL_THICKNESS = 5.0            # Wall thickness of corner parts (mm)
 JAM_NUT_ACCESS_DIA = 20.0       # Diameter for jam nut access holes (mm)
 
-# Vertical Rod Positions
+# Vertical Rod Positions. One upright at each corner, and no centre rods.
 FRONT_LEFT_V = True  # VFL
-FRONT_CENTER_V = True  # VFC (optional center rod)
+FRONT_CENTER_V = False  # VFC (optional center rod)
 FRONT_RIGHT_V = True  # VFR
 BACK_LEFT_V = True  # VBL
-BACK_CENTER_V = True  # VBC
+BACK_CENTER_V = False  # VBC
 BACK_RIGHT_V = True  # VBR
 
-# Z-System Mounting
+# Z-System Mounting. The three Z motors sit on pucks on the plinth
+# (ADR-010), so no corner bracket carries a motor.
 TRIPLE_Z = True
 Z_MOUNT_PATTERN = (
-    "FRONT_CORNERS_BACK_BOTTOM"  # Front L+R integrated, Back Center on bottom rod
+    "FRONT_CORNERS_BACK_BOTTOM"  # Two at the front corners, one at the back centre
 )
 
-# Corner Count and Types
-BOTTOM_CORNERS = 4  # 2 Z-mount + 2 standard
-TOP_CORNERS = 4  # All standard (gantry)
+# Corner Count and Types. All four bottom brackets are the same part.
+BOTTOM_CORNERS = 4  # all standard
+TOP_CORNERS = 4  # carry the XY gantry
 TOTAL_CORNERS = 8
 
 # Z-Motor Locations
-Z1_LOCATION = "front_left_corner"  # Integrated into Corner 1
-Z2_LOCATION = "front_right_corner"  # Integrated into Corner 2
-Z3_LOCATION = "back_center_rod"  # Separate Z-puck on back bottom rod
+Z1_LOCATION = "front_left"  # Puck on the plinth
+Z2_LOCATION = "front_right"  # Puck on the plinth
+Z3_LOCATION = "back_centre"  # Puck on the plinth
 
 # Corner Types
-FRONT_LEFT_CORNER = "Z_MOUNT_INTEGRATED"
-FRONT_RIGHT_CORNER = "Z_MOUNT_INTEGRATED"
+FRONT_LEFT_CORNER = "STANDARD"
+FRONT_RIGHT_CORNER = "STANDARD"
 BACK_LEFT_CORNER = "STANDARD"
 BACK_RIGHT_CORNER = "STANDARD"
 
-# Z-Clearances
-BOTTOM_Z_CLEARANCE = 25  # Bed + spider + nut clearance from bottom frame
-TOP_Z_CLEARANCE = 15  # Bed to gantry clearance
-Z_TRAVEL_MAX = SKELETON_Z - BOTTOM_Z_CLEARANCE - TOP_Z_CLEARANCE  # = 260mm travel
+# Z travel this frame allows, from amalgam/lib/layout.py. It must be at least
+# BUILD_VOLUME["Z"]. cad/tests/test_layout.py checks it.
+Z_TRAVEL_MAX = 224.75
 
 # --- 6.2 SPIDER BED SUPPORT ---
 SPIDER_ARM_LENGTH = 150

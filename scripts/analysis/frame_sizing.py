@@ -1,13 +1,26 @@
 """
 Frame Sizing Calculator for Amalgam
 
-Calculates required frame dimensions based on bed size and
-component clearances. Helps builders understand the relationship
-between heat bed size and frame requirements.
+Reports the frame a given bed needs. The frame size and the M10 rod lengths
+come from amalgam.lib.layout, which derives them from what has to fit: the
+gantry's travel, the bed's travel and the stack of parts under the bed. This
+module adds the smooth-rod spans used for the sag calculation.
 """
 
+import sys
 from dataclasses import dataclass
-from typing import Optional
+from pathlib import Path
+
+# The layout is plain Python, so the stdlib-only analysis tools can use it.
+CAD_DIR = Path(__file__).resolve().parents[2] / "cad"
+if str(CAD_DIR) not in sys.path:
+    sys.path.insert(0, str(CAD_DIR))
+
+from amalgam.lib.layout import (  # noqa: E402
+    LayoutConfig,
+    build_layout,
+    builder_skeleton,
+)
 
 
 @dataclass
@@ -18,15 +31,15 @@ class FrameSizeResult:
     bed_y: float  # mm
     build_z: float  # mm
 
-    # Calculated frame dimensions
-    frame_x: float  # mm (internal)
-    frame_y: float  # mm (internal)
-    frame_z: float  # mm (internal)
+    # Frame dimensions (mm), from amalgam.lib.layout
+    frame_x: float  # between the left and right uprights
+    frame_y: float  # between the front and back uprights
+    frame_z: float  # between the bottom and top X rods
 
-    # Rod lengths needed
-    rod_x_length: float  # mm
-    rod_y_length: float  # mm
-    rod_z_length: float  # mm
+    # M10 rod lengths to cut (mm), rounded up to 5 mm
+    rod_x_length: float  # the 4 rods running left to right
+    rod_y_length: float  # the 4 rods running front to back
+    rod_z_length: float  # the 4 uprights
 
     # Smooth rod spans
     x_span: float  # mm (unsupported span for X gantry)
@@ -35,26 +48,12 @@ class FrameSizeResult:
     notes: list[str]
 
 
-# Standard clearances (mm)
+# Spans used for the sag calculation (mm). These are physics inputs and are
+# kept as published in ADR-021, so its deflection numbers do not move. The
+# frame itself is sized by amalgam.lib.layout, not by these.
 CLEARANCES = {
-    # X-axis clearances
-    "x_motor": 60,  # Space for X motor
-    "x_endstop": 20,  # Space for X endstop
-    "x_belt_path": 40,  # Belt tensioner and routing
-    "x_extruder_overhang": 35,  # Pitan extruder overhang (50 for Wade)
-
-    # Y-axis clearances
-    "y_motor": 60,  # Space for Y motor
-    "y_carriage": 50,  # Y carriage travel beyond bed
-    "y_belt_path": 40,  # Belt tensioner and routing
-
-    # Z-axis clearances
-    "z_motor_coupler": 70,  # Z motor + coupler height
-    "z_top_bracket": 50,  # Top bracket clearance
-    "z_bed_clearance": 25,  # Bed to bottom frame
-
-    # Frame corner overhead
-    "corner_size": 50,  # Size of printed corner brackets
+    "x_motor": 60,  # X span = bed + this (220 + 60 = 280mm, ADR-021)
+    "y_carriage": 50,  # Y span = bed + this
 }
 
 
@@ -72,47 +71,26 @@ def calculate_frame_size(
         bed_x: Heated bed X dimension in mm (e.g., 235)
         bed_y: Heated bed Y dimension in mm (e.g., 235)
         build_z: Desired Z build height in mm (e.g., 250)
-        extruder_type: Extruder type for overhang calculation
-        triple_z: Whether using Triple-Z (affects Z motor placement)
+        extruder_type: Recorded for the caller. The frame size does not
+            depend on it; the layout assumes one toolhead envelope.
+        triple_z: Whether using Triple-Z (affects the notes)
 
     Returns:
         FrameSizeResult with all calculated dimensions
     """
     notes = []
 
-    # Extruder overhang based on type
-    extruder_overhangs = {
-        "PITAN": 35,
-        "WADE": 50,
-        "MK8": 25,
-        "SHERPA": 25,
-    }
-    x_overhang = extruder_overhangs.get(extruder_type.upper(), 35)
-
-    # Calculate internal frame dimensions
-    frame_x = (
-        bed_x
-        + CLEARANCES["x_motor"]
-        + CLEARANCES["x_endstop"]
-        + x_overhang
-    )
-
-    frame_y = (
-        bed_y
-        + CLEARANCES["y_motor"]
-        + CLEARANCES["y_carriage"]
-    )
-
-    frame_z = (
-        build_z
-        + CLEARANCES["z_motor_coupler"]
-        + CLEARANCES["z_top_bracket"]
-    )
-
-    # Calculate rod lengths (add corner size for overlap)
-    rod_x_length = frame_x + CLEARANCES["corner_size"]
-    rod_y_length = frame_y + CLEARANCES["corner_size"]
-    rod_z_length = frame_z + CLEARANCES["corner_size"]
+    # Frame size and M10 rod lengths come from the layout, which derives them
+    # from what has to fit.
+    layout_config = LayoutConfig(bed_x=bed_x, bed_y=bed_y, build_z=build_z)
+    layout = build_layout(layout_config, skeleton=builder_skeleton(layout_config))
+    cut = layout.cut_list()
+    frame_x = layout.skeleton_x
+    frame_y = layout.skeleton_y
+    frame_z = layout.skeleton_z
+    rod_x_length = cut["bottom_front_x"]
+    rod_y_length = cut["bottom_left_y"]
+    rod_z_length = cut["vertical_front_left"]
 
     # Calculate smooth rod spans
     # X span is roughly bed width + motor clearance
@@ -122,8 +100,12 @@ def calculate_frame_size(
     y_span = bed_y + CLEARANCES["y_carriage"]
 
     # Add notes about the configuration
-    if extruder_type.upper() == "WADE":
-        notes.append("Wade extruder requires larger X overhang (50mm)")
+    x_supported = layout.skeleton_x - layout_config.x_end_width
+    if x_supported > x_span:
+        notes.append(
+            f"NOTE: the frame's X rods support {x_supported:.0f}mm; "
+            f"sag is calculated on a {x_span:.0f}mm span"
+        )
 
     if triple_z:
         notes.append("Triple-Z: Z motors at front corners + back center")
