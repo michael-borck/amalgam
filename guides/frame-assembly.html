@@ -80,7 +80,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-50eb5b89b0de81519140945548e2bba6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-e89d78258451fb351220702b86b1e5c8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -179,6 +179,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Reference</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-reference">    
+        <li>
+    <a class="dropdown-item" href="../reference/index.html">
+ <span class="dropdown-text">Reference Overview</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="../reference/donor-printer-guide.html">
  <span class="dropdown-text">Donor Printer Guide</span></a>
@@ -291,6 +296,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../articles/reconfiguration-of-3d-printing-market.html">
  <span class="dropdown-text">Reconfiguration of 3D Printing Market</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../articles/printed-frame-printers-context.html">
+ <span class="dropdown-text">Printed Frame Printers</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -382,7 +391,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#threaded-rods-m10" id="toc-threaded-rods-m10" class="nav-link" data-scroll-target="#threaded-rods-m10">Threaded Rods (M10)</a></li>
   <li><a href="#hardware" id="toc-hardware" class="nav-link" data-scroll-target="#hardware">Hardware</a></li>
-  <li><a href="#smooth-rods-mb58fc729-690b-4000-b19f-365a4093b2ff7b7b3c2076617220736d6f6f74685f726f645f646961203e7d7d" id="toc-smooth-rods-mb58fc729-690b-4000-b19f-365a4093b2ff7b7b3c2076617220736d6f6f74685f726f645f646961203e7d7d" class="nav-link" data-scroll-target="#smooth-rods-mb58fc729-690b-4000-b19f-365a4093b2ff7b7b3c2076617220736d6f6f74685f726f645f646961203e7d7d">Smooth Rods (M10)</a></li>
+  <li><a href="#smooth-rods-mb58fc729-690b-4000-b19f-365a4093b2ff7b7b3c2076617220736d6f6f74685f726f645f646961203e7d7d" id="toc-smooth-rods-mb58fc729-690b-4000-b19f-365a4093b2ff7b7b3c2076617220736d6f6f74685f726f645f646961203e7d7d" class="nav-link" data-scroll-target="#smooth-rods-mb58fc729-690b-4000-b19f-365a4093b2ff7b7b3c2076617220736d6f6f74685f726f645f646961203e7d7d">Smooth Rods (M8)</a></li>
   </ul></li>
   <li><a href="#printed-parts" id="toc-printed-parts" class="nav-link" data-scroll-target="#printed-parts">Printed Parts</a></li>
   <li><a href="#assembly-steps" id="toc-assembly-steps" class="nav-link" data-scroll-target="#assembly-steps">Assembly Steps</a>
@@ -422,7 +431,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="frame-assembly" class="level1">
 <h1>Frame Assembly</h1>
-<p>Building the M10 threaded rod skeleton for your 235×235mm bed.</p>
+<p>Building the M10 threaded rod skeleton for your 220×220mm bed.</p>
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
 <p>The Amalgam frame uses M10 threaded rods as the primary structural element. This approach offers:</p>
@@ -437,7 +446,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="materials-required">Materials Required</h2>
 <section id="threaded-rods-m10" class="level3">
 <h3 class="anchored" data-anchor-id="threaded-rods-m10">Threaded Rods (M10)</h3>
-<p>Based on your bed size (235×235mm):</p>
+<p>Based on your bed size (220×220mm):</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 19%">
@@ -457,36 +466,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td>X</td>
 <td>4</td>
-<td>0mm</td>
+<td>420mm</td>
 <td>Front/back horizontals</td>
 </tr>
 <tr class="even">
 <td>Y</td>
 <td>4</td>
-<td>0mm</td>
+<td>450mm</td>
 <td>Left/right horizontals</td>
 </tr>
 <tr class="odd">
 <td>Z</td>
 <td>4</td>
-<td>0mm</td>
+<td>355mm</td>
 <td>Vertical uprights</td>
 </tr>
 </tbody>
 </table>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Cut List
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>If frame dimensions show 0, run <code>python scripts/analyze.py</code> to calculate them.</p>
-</div>
-</div>
 </section>
 <section id="hardware" class="level3">
 <h3 class="anchored" data-anchor-id="hardware">Hardware</h3>
@@ -518,7 +514,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </section>
 <section id="smooth-rods-mb58fc729-690b-4000-b19f-365a4093b2ff7b7b3c2076617220736d6f6f74685f726f645f646961203e7d7d" class="level3">
-<h3 class="anchored" data-anchor-id="smooth-rods-mb58fc729-690b-4000-b19f-365a4093b2ff7b7b3c2076617220736d6f6f74685f726f645f646961203e7d7d">Smooth Rods (M10)</h3>
+<h3 class="anchored" data-anchor-id="smooth-rods-mb58fc729-690b-4000-b19f-365a4093b2ff7b7b3c2076617220736d6f6f74685f726f645f646961203e7d7d">Smooth Rods (M8)</h3>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 19%">
@@ -538,19 +534,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td>X gantry</td>
 <td>2</td>
-<td>~0mm</td>
+<td>~280mm</td>
 <td>Check CAD output</td>
 </tr>
 <tr class="even">
 <td>Y axis</td>
 <td>2</td>
-<td>~0mm</td>
+<td>~355mm</td>
 <td>Check CAD output</td>
 </tr>
 <tr class="odd">
 <td>Z axis</td>
 <td>2-4</td>
-<td>~0mm</td>
+<td>~250mm</td>
 <td>2 for belt-Z, 4 for triple-Z</td>
 </tr>
 </tbody>
@@ -597,8 +593,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="step-2-bottom-frame">Step 2: Bottom Frame</h3>
 <ol type="1">
 <li>Lay out 4 bottom corners</li>
-<li>Insert X rods (0mm) through front/back</li>
-<li>Insert Y rods (0mm) through left/right</li>
+<li>Insert X rods (420mm) through front/back</li>
+<li>Insert Y rods (450mm) through left/right</li>
 <li>Hand-tighten all nuts</li>
 </ol>
 <pre><code>    Y rods
@@ -613,7 +609,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="step-3-add-verticals" class="level3">
 <h3 class="anchored" data-anchor-id="step-3-add-verticals">Step 3: Add Verticals</h3>
 <ol type="1">
-<li>Thread Z rods (0mm) through bottom corners</li>
+<li>Thread Z rods (355mm) through bottom corners</li>
 <li>Attach top corners</li>
 <li>Hand-tighten</li>
 </ol>
@@ -652,7 +648,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This guide uses dimensions from your config.py: - Bed: 235×235mm - Smooth rods: M10 - Z type: Triple Independent Z</p>
+<p>This guide uses dimensions from your config.py: - Bed: 220×220mm - Smooth rods: M8 - Z type: Triple Independent Z</p>
 </div>
 </div>
 
